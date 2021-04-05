@@ -185,17 +185,13 @@ void updateDisplay(bool bg, bool title, bool text) {
 
 #else
 
-
-
-
-
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
 
 #define TFT_CS        10
-#define TFT_RST        8 
+#define TFT_RST        8
 #define TFT_DC         9
-#define TFT_MOSI 11 
+#define TFT_MOSI 11
 #define TFT_SCLK 12
 
 #define T 4000
@@ -209,28 +205,46 @@ bool resetBackground = true;
 #define TopOfScreen 5
 #define LeftOfScreen 5
 
+/*
+   HelvB10 -
+    1. get Helvb10.bdf from ucglib source
+    2. run through binFontsTool (https://forum.arduino.cc/index.php?topic=447956.0) to convert to c code (.h file)
+    3. add to project, view, and adjust as needed with correctFontY()
+*/
+#include "HelvB10.h"
+/*
+   Conversion of ucgLib 5x7.bdf using binFontsTool
+*/
+#include "TinyFont.h"
 
+/*
+    1. use ucglib: ./do_fontsize_a_v2.sh 22 ../ttf/fu/FreeUniversal-Bold.ttf fubtest
+    2. run through binFontsTool
+    3. adjust with correctFontY()
+*/
+#include "TitleFont.h"
 
-#include <Fonts/FreeSans12pt7b.h>
-#include <Fonts/FreeSans9pt7b.h>
-#include <Fonts/Tiny3x3a2pt7b.h>
-#include <Fonts/Org_01.h>
-#include <Fonts/FreeMono9pt7b.h>
+void correctFontY(int yDelta, int numGlyphs, GFXglyph *glyphs) {
+  int dY = 0;
+  for (int i = 0; i < numGlyphs; ++i) {
+    // bring down dY by x pixels
+    dY = glyphs[i].yOffset;
+    if (dY < -(yDelta + 1)) {
+      glyphs[i].yOffset = dY + yDelta;
+    }
+  }
+}
 
-#include "FreeSans17px.h"
-#include "FreeSans11px.h"
-#include "FreeSans7px.h"
-
-#define TitleFont &FreeSans17px // 17px tall
-#define TitleFontHeight 17
+#define TitleFont &FreeUniversal // 15px tall
+#define TitleFontHeight 15
 #define TitleFontScale 1
 
-#define SmallFont &FreeSans11px // 11px tall
+#define SmallFont &Helvetica_Bold // 11px tall
 #define SmallFontHeight 13
 #define SmallFontScale 1
 
-#define TinyFont &Org_01 // 7px tall
-#define TinyFontHeight 5
+#define TinyFont &FixedTiny // 7px tall
+#define TinyFontHeight 7
 #define TinyFontScale 1
 
 #define LineSpacing 4
@@ -247,6 +261,8 @@ bool resetBackground = true;
 
 
 void setupDisplay() {
+  correctFontY(7, Helvetica_Bold.last - Helvetica_Bold.first, Helvetica_Bold.glyph);
+  correctFontY(5, FreeUniversal.last - FreeUniversal.first, FreeUniversal.glyph);
   tft.initR(INITR_BLACKTAB);      // Init ST7735S chip, black tab
   tft.setRotation(1); // 270 degress
   tft.fillScreen(GRAY_100);
@@ -282,6 +298,8 @@ int getStringWidth(String str) {
 
 String lastTextLeft[10];
 String lastTextRight[10];
+// TODO: Can use GFXcanvas1 to draw in memory and blt to the screen for flicker-free text changes.
+// see https://learn.adafruit.com/adafruit-gfx-graphics-library/using-fonts
 void printText(int line, String textLeft, String textRight) {
   tft.setFont(SmallFont);
   tft.setTextColor(GRAY_600);
@@ -300,7 +318,7 @@ void printText(int line, String textLeft, String textRight) {
       Serial.println("Last Right width " + String(lastRWidth) + " clearing (" + String(winWidth - lastRWidth - LeftOfScreen) + ", " + String(lTop - SmallFontHeight) + ", " + String(lastRWidth) + ")");
     }
     tft.fillRect(winWidth - lastRWidth - LeftOfScreen, lTop - SmallFontHeight, lastRWidth, SmallFontHeight, GRAY_100);
-    
+
     int rWidth = getStringWidth(textRight.c_str());
     if (line == 1) {
       Serial.println("Right width " + String(rWidth) + " printing to (" + String(winWidth - LeftOfScreen - rWidth) + ", " + String(lTop) + ")");
@@ -323,7 +341,7 @@ void _printGraphText(int line, String minStr, String maxStr) {
   tft.setFont(TinyFont);
   tft.setTextColor(GRAY_600);
   tft.setCursor(LeftOfScreen + 1, getLineTop(line) - (SmallFontHeight - TinyFontHeight));
-  
+
   tft.print(maxStr);
   tft.setCursor(LeftOfScreen + 1, getLineTop(line + 1));
   tft.print(minStr);

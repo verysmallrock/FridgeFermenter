@@ -13,20 +13,21 @@ float temp;
 float humidity;
 
 void mainSetup() {
-  setupDisplay();  
-  printTitle("Initializing...");  
+  int line = 1;
+  setupDisplay();
+  printTitle("Initializing...");
 
-  Serial.println("Power setup");
+
   setupPower();
-  Serial.println("Temp setup");
+  printText(line++, "Power setup OK");
   dht.begin();
+  printText(line++, "Temp setup OK");
 
-  Serial.println("Wifi setup");
   bool WifiOk = connectToWifi();
-  printText(1, WifiOk ? "Connected to Wifi" : "Wifi ERROR");
-  
+  printText(line++, WifiOk ? "Connected to Wifi" : "Wifi ERROR");
+
   bool sheetOk = setupSheetLogger();
-  printText(2, sheetOk ? "Sheetlogger OK": "Sheetlogger ERROR");
+  printText(line++, sheetOk ? "Sheetlogger OK": "Sheetlogger ERROR");
 }
 
 // This code assumes readSensors is called frequently to update temp/humidity
