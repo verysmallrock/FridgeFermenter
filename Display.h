@@ -1,8 +1,7 @@
 #include <SPI.h>
-#include "Ucglib.h"
 
-#ifndef UCGLIB_INCLUDE
-#define UCGLIB_INCLUDE
+#ifndef DISPLAY_INCLUDE
+#define DISPLAY_INCLUDE
 
 void setupDisplay();
 void updateDisplay(bool bg, bool title, bool text);

@@ -3,10 +3,10 @@
 
 #include "DHTesp.h"
 
-#define RELAY_PIN_HUMIDIFIER D4
-#define RELAY_PIN_DEHUMIDIFIER D3
-#define RELAY_PIN_FRIDGE D2
-#define RELAY_PIN_HEAT D1
+#define RELAY_PIN_HUMIDIFIER 4
+#define RELAY_PIN_DEHUMIDIFIER 5
+#define RELAY_PIN_FRIDGE 6
+#define RELAY_PIN_HEAT 7
 
 void setupPower();
 void activateHumidifier(bool active = LOW);
