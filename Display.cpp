@@ -313,16 +313,16 @@ void printText(int line, String textLeft, String textRight) {
   }
 
   if (textRight != "" && lastTextRight[line] != textRight) {
-    int lastRWidth = getStringWidth(lastTextRight[line].c_str());
-    if (line == 1) {
-      Serial.println("Last Right width " + String(lastRWidth) + " clearing (" + String(winWidth - lastRWidth - LeftOfScreen) + ", " + String(lTop - SmallFontHeight) + ", " + String(lastRWidth) + ")");
-    }
+    int lastRWidth = getStringWidth(lastTextRight[line]);
+    // if (line == 1) {
+    //   Serial.println("Last Right width " + String(lastRWidth) + " clearing (" + String(winWidth - lastRWidth - LeftOfScreen) + ", " + String(lTop - SmallFontHeight) + ", " + String(lastRWidth) + ")");
+    // }
     tft.fillRect(winWidth - lastRWidth - LeftOfScreen, lTop - SmallFontHeight, lastRWidth, SmallFontHeight, GRAY_100);
 
-    int rWidth = getStringWidth(textRight.c_str());
-    if (line == 1) {
-      Serial.println("Right width " + String(rWidth) + " printing to (" + String(winWidth - LeftOfScreen - rWidth) + ", " + String(lTop) + ")");
-    }
+    int rWidth = getStringWidth(textRight);
+    // if (line == 1) {
+    //   Serial.println("Right width " + String(rWidth) + " printing to (" + String(winWidth - LeftOfScreen - rWidth) + ", " + String(lTop) + ")");
+    // }
     tft.setCursor(winWidth - LeftOfScreen - rWidth, lTop);
     tft.print(textRight);
     lastTextRight[line] = textRight;
@@ -359,10 +359,10 @@ void printGraphBg(int line, String minStr, String maxStr) {
 int lastLinePositions[10] = { 0 };
 int previousPixelY[10] = { -1, -1, -1, -1, -1, -1, -1, -1 , -1, -1 };
 void printNextGraphPoint(int line, float percent) {
-  if (line == 2 && DEBUG) {
-      Serial.println("================= ");
-      Serial.println("data " + String(previousPixelY[line]) + " " + lastLinePositions[line] + " " + String(tft.width() - LeftOfScreen * 2));
-  }
+  // if (line == 2) {
+  //     Serial.println("================= ");
+  //     Serial.println("data " + String(previousPixelY[line]) + " " + lastLinePositions[line] + " " + String(tft.width() - LeftOfScreen * 2));
+  // }
   int top = getLineTop(line - 1) + LineSpacing;
   int graphHeight = SmallFontHeight * 3 - LineSpacing * 2;
   int maxVal = top;
