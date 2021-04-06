@@ -201,7 +201,6 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RS
 
 bool resetBackground = true;
 
-
 #define TopOfScreen 5
 #define LeftOfScreen 5
 

@@ -18,14 +18,35 @@ String payload_base =  "{\"command\": \"appendRow\", \
 String payload = "";
 
 WiFiSSLClient wifi;
-HttpClient client = HttpClient(wifi, host, 443);
+
+
+int clientGet(String path) {
+  HttpClient client = HttpClient(wifi, host, 443);
+  Serial.println("GET " + String(host) + path);
+  client.get(path);
+  int statusCode = client.responseStatusCode();
+  //String response = client.responseBody();
+  return statusCode;
+}
+
+int clientPost(String path, String contentType, String body) {
+  HttpClient client = HttpClient(wifi, host, 443);
+  IPAddress ip = WiFi.localIP();
+  Serial.println("POST " + String(host) + path + ": " + body);
+  Serial.println(ip);
+  client.post(path, contentType, body);
+  int statusCode = client.responseStatusCode();
+
+  client.flush();
+  return statusCode;
+}
 
 bool setupSheetLogger() {
   Serial.print("Logging data to ");
-  Serial.println(host); 
+  Serial.println(host);
 
   Serial.println("\nInitializing Sheet Header");
-  client.get(initializeUrl);
+  clientGet(initializeUrl);
   Serial.println("\nReady to log data");
 }
 
@@ -36,11 +57,11 @@ void logTempHumidityToSheet(float temp, float humidity) {
 
   String contentType = "application/json";
   payload = payload_base + "\"" + sheetTemp + "," + sheetHumid + "\"}";
-  client.post(postUrl, contentType, payload);
+  int statusCode = clientPost(postUrl, contentType, payload);
 
-  int statusCode = client.responseStatusCode();
   if(statusCode >= 400) {
     Serial.println("Sheet Logger response was " + statusCode);
   }
-  
+
+  Serial.println("logged temp " + String(statusCode));
 }

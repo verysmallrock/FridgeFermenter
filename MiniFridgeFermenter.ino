@@ -22,8 +22,8 @@ void setup() {
   updateRelays();
 
   taskManager.scheduleFixedRate(100, readAndRedraw);
-  //taskManager.scheduleFixedRate(15000, logSensorsToCloud);
-  //taskManager.scheduleFixedRate(1000, updateRelays);
+  taskManager.scheduleFixedRate(15000, logSensorsToCloud);
+  taskManager.scheduleFixedRate(1000, updateRelays);
 }
 
 void onEncoderRotate(int newValue) {

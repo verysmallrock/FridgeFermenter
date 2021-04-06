@@ -1,12 +1,12 @@
 #include "Wifi.h"
 
-int status = WL_IDLE_STATUS; 
+int status = WL_IDLE_STATUS;
 
 void preflight() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-  
+
   // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed!");
@@ -34,7 +34,6 @@ bool connectToWifi() {
 
     delay(3000);
   }
-  
 
   Serial.println("WiFi connected");
   Serial.println("IP address: ");

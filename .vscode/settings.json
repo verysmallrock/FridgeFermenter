@@ -4,5 +4,6 @@
 	"files.trimFinalNewlines": true,
 	"files.associations": {
 		"functional": "cpp"
-	}
+	},
+	"arduino.logLevel": "verbose"
 }
