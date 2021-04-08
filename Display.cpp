@@ -74,6 +74,9 @@ void correctFontY(int yDelta, int numGlyphs, GFXglyph *glyphs) {
 #define GRAY_700 0xFFFF // 255
 #define ORANGE_200 0xEAA2 // 237, 86, 21
 
+// last printed text in SmallFont
+String lastTextLeft[10];
+String lastTextRight[10];
 
 void setupDisplay() {
   correctFontY(7, Helvetica_Bold.last - Helvetica_Bold.first, Helvetica_Bold.glyph);
@@ -89,6 +92,13 @@ void drawBackground() {
     return;
   }
   tft.fillRect(0, 0, tft.width(), tft.height(), GRAY_100);
+
+  // reset lastText lines
+  for (int i = 0; i < 10; ++i) {
+    lastTextLeft[i] = "";
+    lastTextRight[i] = "";
+  }
+
   resetBackground = false;
 }
 
@@ -111,8 +121,6 @@ int getStringWidth(String str) {
   return w;
 }
 
-String lastTextLeft[10];
-String lastTextRight[10];
 // TODO: Can use GFXcanvas1 to draw in memory and blt to the screen for flicker-free text changes.
 // see https://learn.adafruit.com/adafruit-gfx-graphics-library/using-fonts
 void printText(int line, String textLeft, String textRight) {
@@ -122,22 +130,24 @@ void printText(int line, String textLeft, String textRight) {
   int lTop = getLineTop(line);
   int winWidth = tft.width();
 
+  // Clear all First
+  if (textLeft != lastTextLeft[line]) {
+    int lastLWidth = getStringWidth(lastTextLeft[line]);
+    tft.fillRect(2, lTop - SmallFontHeight, lastLWidth, SmallFontHeight, GRAY_100);
+  }
+  if (textRight != "" && lastTextRight[line] != textRight) {
+    int lastRWidth = getStringWidth(lastTextRight[line]);
+    tft.fillRect(winWidth - lastRWidth - LeftOfScreen, lTop - SmallFontHeight, lastRWidth, SmallFontHeight, GRAY_100);
+  }
+
+  // Print all second
   if (textLeft != lastTextLeft[line]) {
     tft.print(textLeft);
     lastTextLeft[line] = textLeft;
   }
 
   if (textRight != "" && lastTextRight[line] != textRight) {
-    int lastRWidth = getStringWidth(lastTextRight[line]);
-    // if (line == 1) {
-    //   Serial.println("Last Right width " + String(lastRWidth) + " clearing (" + String(winWidth - lastRWidth - LeftOfScreen) + ", " + String(lTop - SmallFontHeight) + ", " + String(lastRWidth) + ")");
-    // }
-    tft.fillRect(winWidth - lastRWidth - LeftOfScreen, lTop - SmallFontHeight, lastRWidth, SmallFontHeight, GRAY_100);
-
     int rWidth = getStringWidth(textRight);
-    // if (line == 1) {
-    //   Serial.println("Right width " + String(rWidth) + " printing to (" + String(winWidth - LeftOfScreen - rWidth) + ", " + String(lTop) + ")");
-    // }
     tft.setCursor(winWidth - LeftOfScreen - rWidth, lTop);
     tft.print(textRight);
     lastTextRight[line] = textRight;
