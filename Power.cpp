@@ -6,24 +6,24 @@ void setupPower() {
 	pinMode(RELAY_PIN_FRIDGE, OUTPUT);
 	pinMode(RELAY_PIN_HEAT, OUTPUT);
 
-	digitalWrite(RELAY_PIN_HUMIDIFIER, LOW);
-	digitalWrite(RELAY_PIN_DEHUMIDIFIER, LOW);
-	digitalWrite(RELAY_PIN_FRIDGE, LOW);
-	digitalWrite(RELAY_PIN_HEAT, LOW);
+	digitalWrite(RELAY_PIN_HUMIDIFIER, POWER_OFF);
+	digitalWrite(RELAY_PIN_DEHUMIDIFIER, POWER_OFF);
+	digitalWrite(RELAY_PIN_FRIDGE, POWER_OFF);
+	digitalWrite(RELAY_PIN_HEAT, POWER_OFF);
 }
 
-void activateHumidifier(bool active) {
+void activateHumidifier(int active) {
 	digitalWrite(RELAY_PIN_HUMIDIFIER, active);
 }
 
-void activateDehumidifier(bool active) {
+void activateDehumidifier(int active) {
 	digitalWrite(RELAY_PIN_DEHUMIDIFIER, active);
 }
 
-void activateFridge(bool active) {
+void activateFridge(int active) {
 	digitalWrite(RELAY_PIN_FRIDGE, active);
 }
 
-void activateHeat(bool active) {
+void activateHeat(int active) {
 	digitalWrite(RELAY_PIN_HEAT, active);
 }

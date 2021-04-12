@@ -8,10 +8,13 @@
 #define RELAY_PIN_FRIDGE 6
 #define RELAY_PIN_HEAT 7
 
+#define POWER_ON LOW
+#define POWER_OFF HIGH
+
 void setupPower();
-void activateHumidifier(bool active = LOW);
-void activateDehumidifier(bool active = LOW);
-void activateFridge(bool active = LOW);
-void activateHeat(bool active = LOW);
+void activateHumidifier(int active);
+void activateDehumidifier(int active);
+void activateFridge(int active);
+void activateHeat(int active);
 
 #endif

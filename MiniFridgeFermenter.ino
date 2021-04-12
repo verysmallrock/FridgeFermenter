@@ -1,11 +1,14 @@
 #include "Main.h"
 #include "Display.h"
+#include "Power.h"
 #include "DHTesp.h"
 #include "RotaryEncoder.h"
 #include<IoAbstraction.h> // for TaskManager
 
 void onEncoderClick(uint8_t, bool);
 void onEncoderRotate(int);
+
+#define FAN_PIN_1 A0
 
 struct AppState {
   unsigned long lastInputTime;
@@ -64,6 +67,8 @@ void setup() {
   updateDisplay(true, false, false);
   updateRelays();
 
+  pinMode(FAN_PIN_1, OUTPUT);
+
   taskManager.scheduleFixedRate(100, readAndRedraw);
   taskManager.scheduleFixedRate(15000, logData);
   taskManager.scheduleFixedRate(1000, updateRelayStates);
@@ -75,7 +80,14 @@ void onEncoderRotate(int newValue) {
   appState.lastInputTime = millis();
 }
 
+bool fanOn = false;
 void onEncoderClick(uint8_t pin, bool heldDown) {
+  if (heldDown) {
+    fanOn = !fanOn;
+    analogWrite(FAN_PIN_1, fanOn ? 255: 0);
+    return;
+  }
+
   nextAppMode();
   appState.lastInputTime = millis();
 }

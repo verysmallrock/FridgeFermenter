@@ -130,10 +130,10 @@ void drawDisplay() {
 bool toggle = false;
 void updateRelays() {
   //toggle = !toggle;
-  activateHumidifier(toggle);
-  activateDehumidifier(toggle);
-  activateFridge(toggle);
-  activateHeat(toggle);
+  //activateHumidifier(toggle ? POWER_ON : POWER_OFF);
+  // activateDehumidifier(toggle ? POWER_ON : POWER_OFF);
+  // activateFridge(toggle ? POWER_ON : POWER_OFF);
+  // activateHeat(toggle ? POWER_ON : POWER_OFF);
 }
 
 void logSensorsToCloud() {
