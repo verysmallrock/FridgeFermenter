@@ -1,4 +1,5 @@
 #include "Main.h"
+#include "AppState.h"
 #include "Display.h"
 #include "Power.h"
 #include "DHT.h"
@@ -29,52 +30,29 @@ void mainSetup() {
   printText(line++, sheetOk ? "Sheetlogger OK": "Sheetlogger ERROR");
 }
 
-float temp;
-float humidity;
-
 char buffer1[50];
 char buffer2[50];
 
-int minTemp = 40;
-int maxTemp = 90;
-int targetMinTemp = 65;
-int targetMaxTemp = 70;
-int tempFloat = 3;
-int tempWidth = 10;
-
-int minHumidity = 55;
-int maxHumidity = 90;
-int targetMinHumidity = 70;
-int targetMaxHumidity = 75;
-int humidityFloat = 3;
-int humidityWidth = 10;
-
-int fanDurationSeconds = 30;
-int fanIntervalMinutes = 180;
-
-// This code assumes readSensors is called frequently to update temp/humidity
+// This code assumes readSensors is called frequently to update currentTemp/currentHumidity
 // All other tasks use those values for functionality.
 void readSensors() {
-  temp = dht.convertCtoF(dht.readTemperature());
-  humidity = dht.readHumidity();
-  if (DEBUG) {
-    Serial.println("Temp: " + String(temp) + " Humidity: " + String(humidity));
-  }
+  state.currentTemp = dht.convertCtoF(dht.readTemperature());
+  state.currentHumidity = dht.readHumidity();
   validateMinMaxTemp();
 }
 
-void initializeMinMax(float temp, float humidity) {
-  minTemp = int(temp) - tempWidth;
-  maxTemp = int(temp) + tempWidth;
-  minHumidity = int(humidity) - humidityWidth;
-  maxHumidity = int(humidity) + humidityWidth;
+void initializeMinMax(float currentTemp, float currentHumidity) {
+  state.minTemp = int(currentTemp) - state.tempWidth;
+  state.maxTemp = int(currentTemp) + state.tempWidth;
+  state.minHumidity = int(currentHumidity) - state.humidityWidth;
+  state.maxHumidity = int(currentHumidity) + state.humidityWidth;
 
   if (currentAppMode == MODE_IDLE) {
-    sprintf(buffer1, "%d F", minTemp);
-    sprintf(buffer2, "%d F", maxTemp);
+    sprintf(buffer1, "%d F", state.minTemp);
+    sprintf(buffer2, "%d F", state.maxTemp);
     printGraphBg(2, buffer1, buffer2);
-    sprintf(buffer1, "%d%%", minHumidity);
-    sprintf(buffer2, "%d%%", maxHumidity);
+    sprintf(buffer1, "%d%%", state.minHumidity);
+    sprintf(buffer2, "%d%%", state.maxHumidity);
     printGraphBg(5, buffer1, buffer2);
   }
 }
@@ -82,12 +60,12 @@ void initializeMinMax(float temp, float humidity) {
 bool minMaxInitialized = false;
 void validateMinMaxTemp() {
   if (!minMaxInitialized) {
-    initializeMinMax(temp, humidity);
+    initializeMinMax(state.currentTemp, state.currentHumidity);
     minMaxInitialized = true;
   }
-  if (isnan(humidity) || isnan(temp)) {
+  if (isnan(state.currentHumidity) || isnan(state.currentTemp)) {
     Serial.println("Failed to read from DHT sensor. Setting to 50/50.");
-    temp = humidity = 50;
+    state.currentTemp = state.currentHumidity = 50;
   }
 }
 
@@ -103,31 +81,33 @@ void drawDisplay() {
     updateDisplay(false, false, true);
 
     printTitle("Aging Box 0.1");
-    sprintf(buffer1, "%0.1f F", temp);
+    sprintf(buffer1, "%0.1f F", state.currentTemp);
     printText(1, "Temperature", buffer1);
-    printNextGraphPoint(2, (temp - minTemp) / (maxTemp - minTemp));
+    printNextGraphPoint(2, (state.currentTemp - state.minTemp) / (state.maxTemp - state.minTemp));
 
-    sprintf(buffer1, "%0.1f %%", humidity);
+    sprintf(buffer1, "%0.1f %%", state.currentHumidity);
     printText(4, "Humidity", buffer1);
-    printNextGraphPoint(5, (humidity - minHumidity) / (maxHumidity - minHumidity));
+    printNextGraphPoint(5, (state.currentHumidity - state.minHumidity) / (state.maxHumidity - state.minHumidity));
   } else if (currentAppMode == MODE_CONFIG_1) {
     updateDisplay(false, false, true);
 
     printTitle("Configuration");
-    sprintf(buffer1, "%d - %d F", targetMinTemp, targetMaxTemp);
+    sprintf(buffer1, "%d - %d F", state.targetMinTemp, state.targetMaxTemp);
     printText(1, "Temp", buffer1);
 
-    sprintf(buffer1, "%d F", tempFloat);
+    sprintf(buffer1, "%d F", state.tempFloat);
     printText(2, "  - Float", buffer1);
 
-    sprintf(buffer1, "%d - %d %%", targetMinHumidity, targetMaxHumidity);
+    sprintf(buffer1, "%d - %d %%", state.targetMinHumidity, state.targetMaxHumidity);
     printText(3, "Humidity", buffer1);
 
-    sprintf(buffer1, "%d %%", humidityFloat);
+    sprintf(buffer1, "%d %%", state.humidityFloat);
     printText(4, "  - Float", buffer1);
 
-    sprintf(buffer1, "%ds / %dm ", fanDurationSeconds, fanIntervalMinutes);
+    sprintf(buffer1, "%ds / %dm ", state.fanDurationSeconds, state.fanIntervalMinutes);
     printText(5, "Fan", buffer1);
+
+    printText(6, "", "Exit");
   }
 }
 
@@ -141,5 +121,5 @@ void updateRelays() {
 }
 
 void logSensorsToCloud() {
-  logTempHumidityToSheet(temp, humidity);
+  logTempHumidityToSheet(state.currentTemp, state.currentHumidity);
 }
