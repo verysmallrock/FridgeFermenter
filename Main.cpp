@@ -11,14 +11,11 @@ int currentAppMode = MODE_IDLE;
 
 #define TEMPHUMIDITY_PIN A7
 DHT dht(TEMPHUMIDITY_PIN, DHT22);
-float temp;
-float humidity;
 
 void mainSetup() {
   int line = 1;
   setupDisplay();
   printTitle("Initializing...");
-
 
   setupPower();
   printText(line++, "Power setup OK");
@@ -32,16 +29,8 @@ void mainSetup() {
   printText(line++, sheetOk ? "Sheetlogger OK": "Sheetlogger ERROR");
 }
 
-// This code assumes readSensors is called frequently to update temp/humidity
-// All other tasks use those values for functionality.
-void readSensors() {
-  temp = dht.convertCtoF(dht.readTemperature());
-  humidity = dht.readHumidity();
-  if (DEBUG) {
-    Serial.println("Temp: " + String(temp) + " Humidity: " + String(humidity));
-  }
-  validateMinMaxTemp();
-}
+float temp;
+float humidity;
 
 char buffer1[50];
 char buffer2[50];
@@ -60,7 +49,19 @@ int targetMaxHumidity = 75;
 int humidityFloat = 3;
 int humidityWidth = 10;
 
+int fanDurationSeconds = 30;
+int fanIntervalMinutes = 180;
 
+// This code assumes readSensors is called frequently to update temp/humidity
+// All other tasks use those values for functionality.
+void readSensors() {
+  temp = dht.convertCtoF(dht.readTemperature());
+  humidity = dht.readHumidity();
+  if (DEBUG) {
+    Serial.println("Temp: " + String(temp) + " Humidity: " + String(humidity));
+  }
+  validateMinMaxTemp();
+}
 
 void initializeMinMax(float temp, float humidity) {
   minTemp = int(temp) - tempWidth;
@@ -116,14 +117,17 @@ void drawDisplay() {
     sprintf(buffer1, "%d - %d F", targetMinTemp, targetMaxTemp);
     printText(1, "Temp", buffer1);
 
-    sprintf(buffer1, "%d", tempFloat);
+    sprintf(buffer1, "%d F", tempFloat);
     printText(2, "  - Float", buffer1);
 
     sprintf(buffer1, "%d - %d %%", targetMinHumidity, targetMaxHumidity);
     printText(3, "Humidity", buffer1);
 
-    sprintf(buffer1, "%d", humidityFloat);
+    sprintf(buffer1, "%d %%", humidityFloat);
     printText(4, "  - Float", buffer1);
+
+    sprintf(buffer1, "%ds / %dm ", fanDurationSeconds, fanIntervalMinutes);
+    printText(5, "Fan", buffer1);
   }
 }
 

@@ -1,20 +1,15 @@
 #include "Main.h"
+#include "AppState.h"
 #include "Display.h"
 #include "Power.h"
 #include "DHTesp.h"
 #include "RotaryEncoder.h"
-#include<IoAbstraction.h> // for TaskManager
+#include <IoAbstraction.h> // for TaskManager
 
 void onEncoderClick(uint8_t, bool);
 void onEncoderRotate(int);
 
 #define FAN_PIN_1 A0
-
-struct AppState {
-  unsigned long lastInputTime;
-  unsigned long maxIdleTime;
-};
-AppState appState = { 0, 15000 };
 
 void nextAppMode(int forceMode = NULL) {
   if (forceMode != NULL) {
@@ -30,7 +25,7 @@ void nextAppMode(int forceMode = NULL) {
 
 void exitEditingIfIdle() {
   if (currentAppMode != MODE_IDLE) {
-    if ((millis() - appState.lastInputTime) > appState.maxIdleTime) {
+    if ((millis() - state.lastInputTime) > state.maxIdleTime) {
       nextAppMode(MODE_IDLE);
     }
   }
@@ -61,7 +56,10 @@ void updateRelayStates() {
 void setup() {
   Serial.begin(115200);
   delay(50);
+
   mainSetup();
+  Serial.println("Appstate load");
+  loadAppState();
   setupInput(onEncoderClick, onEncoderRotate);
   delay(2000);
   updateDisplay(true, false, false);
@@ -70,14 +68,14 @@ void setup() {
   pinMode(FAN_PIN_1, OUTPUT);
 
   taskManager.scheduleFixedRate(100, readAndRedraw);
-  taskManager.scheduleFixedRate(15000, logData);
+  //taskManager.scheduleFixedRate(15000, logData);
   taskManager.scheduleFixedRate(1000, updateRelayStates);
   taskManager.scheduleFixedRate(1000, exitEditingIfIdle);
 }
 
 void onEncoderRotate(int newValue) {
   Serial.println("Encoder " + String(newValue));
-  appState.lastInputTime = millis();
+  state.lastInputTime = millis();
 }
 
 bool fanOn = false;
@@ -89,7 +87,7 @@ void onEncoderClick(uint8_t pin, bool heldDown) {
   }
 
   nextAppMode();
-  appState.lastInputTime = millis();
+  state.lastInputTime = millis();
 }
 
 void loop() {
