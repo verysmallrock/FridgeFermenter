@@ -1,6 +1,10 @@
 #ifndef APPSTATE_INCLUDE
 #define APPSTATE_INCLUDE
 
+#define INACTIVE 0
+#define INCREASE 1
+#define DECREASE 2
+
 struct AppState {
 	bool valid;
 
@@ -29,6 +33,15 @@ struct AppState {
 
 	int fanDurationSeconds;
 	int fanIntervalMinutes;
+
+	/* Power activity */
+	int tempDirection;
+	bool heatingActive;
+	bool coolingActive;
+
+	int humidityDirection;
+	bool humidActive;
+	bool dehumidActive;
 };
 #define DEFAULT_STATE { \
 	true, /* valid;*/ \
@@ -54,6 +67,14 @@ struct AppState {
 	\
 	30, /* int fanDurationSeconds; */ \
 	180, /* int fanIntervalMinutes; */ \
+	\
+	INACTIVE, /* int8_t tempDirection; */ \
+	false, /* bool heatingActive; */ \
+	false, /* bool coolingActive; */ \
+	\
+	INACTIVE, /* int8_t humidityDirection; */ \
+	false, /* bool humidActive; */ \
+	false, /* bool dehumidActive; */ \
 }
 
 extern AppState state;

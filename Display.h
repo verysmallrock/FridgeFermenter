@@ -9,7 +9,7 @@ void updateDisplay(bool bg, bool title, bool text);
 void printTitle(String text);
 void printText(int line, String textLeft, String textRight = "");
 
-void printGraphBg(int line, String min, String max);
+void printGraphBg(int line, String min, String max, String bottomRightStr);
 void printNextGraphPoint(int line, float percent);
 
 #endif

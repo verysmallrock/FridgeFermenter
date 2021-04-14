@@ -1,4 +1,5 @@
 #include "Display.h"
+#include "AppState.h"
 #define DEBUG false
 
 #include <Adafruit_GFX.h>    // Core graphics library
@@ -162,7 +163,7 @@ void printTitle(String text) {
   tft.print(text);
 }
 
-void _printGraphText(int line, String minStr, String maxStr) {
+void _printGraphText(int line, String minStr, String maxStr, String bottomRightStr) {
   tft.setFont(TinyFont);
   tft.setTextColor(GRAY_600);
   tft.setCursor(LeftOfScreen + 1, getLineTop(line) - (SmallFontHeight - TinyFontHeight));
@@ -170,15 +171,21 @@ void _printGraphText(int line, String minStr, String maxStr) {
   tft.print(maxStr);
   tft.setCursor(LeftOfScreen + 1, getLineTop(line + 1));
   tft.print(minStr);
+
+  int winWidth = tft.width();
+  int rWidth = getStringWidth(bottomRightStr);
+  tft.setCursor(winWidth - LeftOfScreen - rWidth - 2, getLineTop(line + 1));
+  tft.print(bottomRightStr);
 }
 
 String lastGraphStrings[10][10];
-void printGraphBg(int line, String minStr, String maxStr) {
+void printGraphBg(int line, String minStr, String maxStr, String bottomRightStr) {
   tft.fillRect(LeftOfScreen, getLineTop(line - 1) + LineSpacing, tft.width() - LeftOfScreen * 2, SmallFontHeight * 3 - LineSpacing * 2, GRAY_200);
 
-  _printGraphText(line, minStr, maxStr);
+  _printGraphText(line, minStr, maxStr, bottomRightStr);
   lastGraphStrings[line][0] = minStr;
   lastGraphStrings[line][1] = maxStr;
+  lastGraphStrings[line][2] = bottomRightStr;
 }
 
 int lastLinePositions[10] = { 0 };
@@ -212,7 +219,6 @@ void printNextGraphPoint(int line, float percent) {
       Serial.println("clearing last line " + String(lastX));
     }
     tft.drawFastVLine(lastX, top, graphHeight, GRAY_200);
-
     tft.drawPixel(lastX, previousPixelY[line], GRAY_600);
   }
 
@@ -235,7 +241,7 @@ void printNextGraphPoint(int line, float percent) {
   }
 
   previousPixelY[line] = y;
-  _printGraphText(line, lastGraphStrings[line][0], lastGraphStrings[line][1]);
+  _printGraphText(line, lastGraphStrings[line][0], lastGraphStrings[line][1], lastGraphStrings[line][2]);
 }
 
 void updateDisplay(bool bg, bool title, bool text) {

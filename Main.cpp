@@ -41,6 +41,24 @@ void readSensors() {
   validateMinMaxTemp();
 }
 
+String getTempActivityString() {
+  switch(state.tempDirection) {
+    case INACTIVE: return "Idle";
+    case INCREASE: return "Heat";
+    case DECREASE: return "Cool";
+  }
+  return "";
+}
+
+String getHumidityActivityString() {
+  switch(state.humidityDirection) {
+    case INACTIVE: return "Idle";
+    case INCREASE: return "Humidify";
+    case DECREASE: return "Dehumidify";
+  }
+  return "";
+}
+
 void initializeMinMax(float currentTemp, float currentHumidity) {
   state.minTemp = int(currentTemp) - state.tempWidth;
   state.maxTemp = int(currentTemp) + state.tempWidth;
@@ -50,10 +68,10 @@ void initializeMinMax(float currentTemp, float currentHumidity) {
   if (currentAppMode == MODE_IDLE) {
     sprintf(buffer1, "%d F", state.minTemp);
     sprintf(buffer2, "%d F", state.maxTemp);
-    printGraphBg(2, buffer1, buffer2);
+    printGraphBg(2, buffer1, buffer2, getTempActivityString());
     sprintf(buffer1, "%d%%", state.minHumidity);
     sprintf(buffer2, "%d%%", state.maxHumidity);
-    printGraphBg(5, buffer1, buffer2);
+    printGraphBg(5, buffer1, buffer2, getHumidityActivityString());
   }
 }
 
