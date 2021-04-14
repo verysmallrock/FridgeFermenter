@@ -65,16 +65,6 @@ void correctFontY(int yDelta, int numGlyphs, GFXglyph *glyphs) {
 
 #define LineSpacing 4
 
-#define GRAY_0   0x0000 // 0, 0, 0
-#define GRAY_100 0x10A2 // 21, 21, 21
-#define GRAY_200 0x39E7 // 60
-#define GRAY_300 0x630C // 99
-#define GRAY_400 0x8C51 // 138
-#define GRAY_500 0xB596 // 177
-#define GRAY_600 0xDEDB // 216
-#define GRAY_700 0xFFFF // 255
-#define ORANGE_200 0xEAA2 // 237, 86, 21
-
 // last printed text in SmallFont
 String lastTextLeft[10];
 String lastTextRight[10];
@@ -152,6 +142,51 @@ void printText(int line, String textLeft, String textRight) {
     tft.setCursor(winWidth - LeftOfScreen - rWidth, lTop);
     tft.print(textRight);
     lastTextRight[line] = textRight;
+  }
+}
+
+void printTextFancy(int line, String textLeft[], uint16_t leftColors[], int leftLen, String textRight[], uint16_t rightColors[], int rightLen) {
+  tft.setFont(SmallFont);
+  int lTop = getLineTop(line);
+  tft.setCursor(2, lTop);
+  int winWidth = tft.width();
+
+  String allTextLeft = "";
+  for(int i = 0; i < leftLen; ++i) {
+    allTextLeft += textLeft[i];
+  }
+  // Clear all First
+  if (allTextLeft != lastTextLeft[line]) {
+    int lastLWidth = getStringWidth(lastTextLeft[line]);
+    tft.fillRect(2, lTop - SmallFontHeight, lastLWidth, SmallFontHeight, GRAY_100);
+  }
+  String allTextRight = "";
+  for(int i = 0; i < rightLen; ++i) {
+    allTextRight += textRight[i];
+  }
+  if (allTextRight != "" && lastTextRight[line] != allTextRight) {
+    int lastRWidth = getStringWidth(lastTextRight[line]);
+    tft.fillRect(winWidth - lastRWidth - LeftOfScreen, lTop - SmallFontHeight, lastRWidth, SmallFontHeight, GRAY_100);
+  }
+
+  // Print all second
+  if (allTextLeft != lastTextLeft[line]) {
+    for(int i = 0; i < leftLen; ++i) {
+      tft.setTextColor(leftColors[i]);
+      tft.print(textLeft[i]);
+    }
+    lastTextLeft[line] = allTextLeft;
+  }
+
+  if (allTextRight != "" && lastTextRight[line] != allTextRight) {
+    int rWidth = getStringWidth(allTextRight);
+    tft.setCursor(winWidth - LeftOfScreen - rWidth, lTop);
+    for(int i = 0; i < rightLen; ++i) {
+      tft.setTextColor(rightColors[i]);
+      tft.print(textRight[i]);
+    }
+
+    lastTextRight[line] = allTextRight;
   }
 }
 
