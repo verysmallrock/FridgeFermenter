@@ -1,10 +1,10 @@
 #ifndef MAIN_H
 #define MAIN_H 1
 
-#define MODE_IDLE 0
-#define MODE_CONFIG_1 1
-#define MODE_MAX 1
-extern int currentAppMode;
+#define DEBUG false
+
+#define TEMPHUMIDITY_PIN A7
+#define FAN_PIN_1 A0
 
 void mainSetup();
 void readSensors();
@@ -13,5 +13,9 @@ void logSensorsToCloud();
 void drawDisplay();
 void updateRelays();
 void appModeChanged();
+
+void onInputPress();
+void onInputLongPress();
+void onInputChange(int direction);
 
 #endif

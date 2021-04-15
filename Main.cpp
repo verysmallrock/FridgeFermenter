@@ -6,11 +6,6 @@
 #include "Wifi.h"
 #include "SheetLogger.h"
 
-int currentAppMode = MODE_IDLE;
-
-#define DEBUG false
-
-#define TEMPHUMIDITY_PIN A7
 DHT dht(TEMPHUMIDITY_PIN, DHT22);
 
 void mainSetup() {
@@ -65,7 +60,7 @@ void initializeMinMax(float currentTemp, float currentHumidity) {
   state.minHumidity = int(currentHumidity) - state.humidityWidth;
   state.maxHumidity = int(currentHumidity) + state.humidityWidth;
 
-  if (currentAppMode == MODE_IDLE) {
+  if (state.currentAppMode == MODE_IDLE) {
     sprintf(buffer1, "%d F", state.minTemp);
     sprintf(buffer2, "%d F", state.maxTemp);
     printGraphBg(2, buffer1, buffer2, getTempActivityString());
@@ -95,7 +90,7 @@ void appModeChanged() {
 }
 
 void drawDisplay() {
-  if (currentAppMode == MODE_IDLE) {
+  if (state.currentAppMode == MODE_IDLE) {
     updateDisplay(false, false, true);
 
     printTitle("Aging Box 0.1");
@@ -106,12 +101,18 @@ void drawDisplay() {
     sprintf(buffer1, "%0.1f %%", state.currentHumidity);
     printText(4, "Humidity", buffer1);
     printNextGraphPoint(5, (state.currentHumidity - state.minHumidity) / (state.maxHumidity - state.minHumidity));
-  } else if (currentAppMode == MODE_CONFIG_1) {
+  } else if (state.currentAppMode == MODE_CONFIG_1) {
     updateDisplay(false, false, true);
 
     printTitle("Configuration");
+
     sprintf(buffer1, "%d - %d F", state.targetMinTemp, state.targetMaxTemp);
-    printText(1, "Temp", buffer1);
+    //printText(1, "Temp", buffer1);
+    String left[] = { "Temp" };
+    uint16_t leftColors[] = { GRAY_600 };
+    String right[] = { "70", " - ", "80 F" };
+    uint16_t rightColors[] = { ORANGE_200, GRAY_600, GRAY_600 };
+    printTextFancy(1, left, leftColors, 1, right, rightColors, 3);
 
     sprintf(buffer1, "%d F", state.tempFloat);
     printText(2, "  - Float", buffer1);
@@ -127,6 +128,24 @@ void drawDisplay() {
 
     printText(6, "", "Exit");
   }
+}
+
+void onInputPress() {
+  Serial.println("click");
+  nextAppMode();
+  state.lastInputTime = millis();
+}
+
+bool fanOn = false;
+void onInputLongPress() {
+  Serial.println("held down");
+  fanOn = !fanOn;
+  analogWrite(FAN_PIN_1, fanOn ? 255: 0);
+}
+
+void onInputChange(int direction) {
+  Serial.println("Encoder " + String(direction));
+  state.lastInputTime = millis();
 }
 
 bool toggle = false;

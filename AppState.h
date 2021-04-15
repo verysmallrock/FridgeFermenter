@@ -1,9 +1,15 @@
 #ifndef APPSTATE_INCLUDE
 #define APPSTATE_INCLUDE
 
+#include <Arduino.h>
+
 #define INACTIVE 0
 #define INCREASE 1
 #define DECREASE 2
+
+#define MODE_IDLE 0
+#define MODE_CONFIG_1 1
+#define MODE_MAX 1
 
 struct AppState {
 	bool valid;
@@ -11,6 +17,7 @@ struct AppState {
 	/*  Editor State */
 	unsigned long lastInputTime;
 	unsigned long maxIdleTime;
+	int currentAppMode;
 
 	/*  Sensor State */
 	float currentTemp;
@@ -47,6 +54,7 @@ struct AppState {
 	true, /* valid;*/ \
 	0, /* unsigned long lastInputTime; */ \
 	15000, /* unsigned long maxIdleTime; */ \
+	MODE_IDLE, /* currentAppMode */ \
 	\
 	0, /* float currentTemp; */ \
 	0, /* float currentHumidity; */ \
@@ -81,5 +89,8 @@ extern AppState state;
 
 void loadAppState();
 void saveAppState();
+
+void nextAppMode(int forceMode = NULL);
+void exitEditingIfIdle();
 
 #endif

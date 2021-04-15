@@ -9,30 +9,8 @@
 void onEncoderClick(uint8_t, bool);
 void onEncoderRotate(int);
 
-#define FAN_PIN_1 A0
-
-void nextAppMode(int forceMode = NULL) {
-  if (forceMode != NULL) {
-    currentAppMode = forceMode;
-  } else {
-    ++currentAppMode;
-  }
-  if (currentAppMode > MODE_MAX) {
-    currentAppMode = MODE_IDLE;
-  }
-  appModeChanged();
-}
-
-void exitEditingIfIdle() {
-  if (currentAppMode != MODE_IDLE) {
-    if ((millis() - state.lastInputTime) > state.maxIdleTime) {
-      nextAppMode(MODE_IDLE);
-    }
-  }
-}
-
 void readAndRedraw() {
-  if (currentAppMode == MODE_IDLE) {
+  if (state.currentAppMode == MODE_IDLE) {
     readSensors();
   }
 
@@ -40,14 +18,14 @@ void readAndRedraw() {
 }
 
 void logData() {
-  if (currentAppMode != MODE_IDLE) {
+  if (state.currentAppMode != MODE_IDLE) {
     return;
   }
   logSensorsToCloud();
 }
 
 void updateRelayStates() {
-  if (currentAppMode != MODE_IDLE) {
+  if (state.currentAppMode != MODE_IDLE) {
     return;
   }
   updateRelays();
@@ -74,20 +52,15 @@ void setup() {
 }
 
 void onEncoderRotate(int newValue) {
-  Serial.println("Encoder " + String(newValue));
-  state.lastInputTime = millis();
+  onInputChange(newValue);
 }
 
-bool fanOn = false;
 void onEncoderClick(uint8_t pin, bool heldDown) {
-  if (heldDown) {
-    fanOn = !fanOn;
-    analogWrite(FAN_PIN_1, fanOn ? 255: 0);
-    return;
+  if(heldDown) {
+    onInputLongPress();
+  } else {
+    onInputPress();
   }
-
-  nextAppMode();
-  state.lastInputTime = millis();
 }
 
 void loop() {

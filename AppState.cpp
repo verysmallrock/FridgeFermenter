@@ -1,5 +1,7 @@
 #include "AppState.h"
+#include "Main.h"
 #include <FlashStorage.h>
+
 
 AppState state;
 FlashStorage(state_store, AppState);
@@ -21,4 +23,24 @@ void loadAppState() {
 void saveAppState() {
   // uncomment this later when we're ready to roll
   //state_store.write(state);
+}
+
+void nextAppMode(int forceMode) {
+  if (forceMode != NULL) {
+    state.currentAppMode = forceMode;
+  } else {
+    ++state.currentAppMode;
+  }
+  if (state.currentAppMode > MODE_MAX) {
+    state.currentAppMode = MODE_IDLE;
+  }
+  appModeChanged();
+}
+
+void exitEditingIfIdle() {
+  if (state.currentAppMode != MODE_IDLE) {
+    if ((millis() - state.lastInputTime) > state.maxIdleTime) {
+      nextAppMode(MODE_IDLE);
+    }
+  }
 }
