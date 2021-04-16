@@ -11,6 +11,14 @@
 #define MODE_CONFIG_1 1
 #define MODE_MAX 1
 
+enum Config1CurrentEditField {
+	tempLow = 0, tempHigh = 1, tempFloat,
+	humLow, humHigh, humFloat,
+	fanDuration, fanPeriod,
+	Exit,
+	lastField
+};
+
 struct AppState {
 	bool valid;
 
@@ -18,6 +26,7 @@ struct AppState {
 	unsigned long lastInputTime;
 	unsigned long maxIdleTime;
 	int currentAppMode;
+	Config1CurrentEditField config1Field;
 
 	/*  Sensor State */
 	float currentTemp;
@@ -55,6 +64,7 @@ struct AppState {
 	0, /* unsigned long lastInputTime; */ \
 	15000, /* unsigned long maxIdleTime; */ \
 	MODE_IDLE, /* currentAppMode */ \
+	tempLow, /* Config1CurrentEditField config1Field; */ \
 	\
 	0, /* float currentTemp; */ \
 	0, /* float currentHumidity; */ \
@@ -91,6 +101,7 @@ void loadAppState();
 void saveAppState();
 
 void nextAppMode(int forceMode = NULL);
+void nextConfig1EditField(int direction);
 void exitEditingIfIdle();
 
 #endif

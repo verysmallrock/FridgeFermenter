@@ -37,6 +37,22 @@ void nextAppMode(int forceMode) {
   appModeChanged();
 }
 
+int c1editFields[] = {tempLow, tempHigh, tempFloat, humLow, humHigh, humFloat, fanDuration, fanPeriod, Exit, lastField};
+void nextConfig1EditField(int direction) {
+  int field = int(state.config1Field);
+  if (direction > 0) {
+    ++field;
+    if (field == int(lastField))
+      field = tempLow;
+  }
+  else {
+    --field;
+    if (field < 0)
+      field = Config1CurrentEditField(lastField - 1);
+  }
+  state.config1Field = Config1CurrentEditField(c1editFields[field]);
+}
+
 void exitEditingIfIdle() {
   if (state.currentAppMode != MODE_IDLE) {
     if ((millis() - state.lastInputTime) > state.maxIdleTime) {

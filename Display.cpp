@@ -14,12 +14,14 @@
 #define T 4000
 #define DLY() delay(2000)
 
+// 128×160px
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
 bool resetBackground = true;
 
 #define TopOfScreen 5
 #define LeftOfScreen 5
+#define RightOfScreen LeftOfScreen
 
 /*
    HelvB10 -
@@ -69,6 +71,12 @@ void correctFontY(int yDelta, int numGlyphs, GFXglyph *glyphs) {
 String lastTextLeft[10];
 String lastTextRight[10];
 
+// last printed fancy text in SmallFont
+String lastFancyTextLeft[10][10];
+String lastFancyTextRight[10][10];
+uint16_t lastFancyTextLeftColors[10][10];
+uint16_t lastFancyTextRightColors[10][10];
+
 void setupDisplay() {
   correctFontY(7, Helvetica_Bold.last - Helvetica_Bold.first, Helvetica_Bold.glyph);
   correctFontY(5, FreeUniversal.last - FreeUniversal.first, FreeUniversal.glyph);
@@ -88,6 +96,13 @@ void drawBackground() {
   for (int i = 0; i < 10; ++i) {
     lastTextLeft[i] = "";
     lastTextRight[i] = "";
+
+    for (int j = 0; j < 10; ++j) {
+      lastFancyTextLeft[i][j] = "";
+      lastFancyTextRight[i][j] = "";
+      lastFancyTextLeftColors[i][j] = 0;
+      lastFancyTextRightColors[i][j] = 0;
+    }
   }
 
   resetBackground = false;
@@ -117,7 +132,7 @@ int getStringWidth(String str) {
 void printText(int line, String textLeft, String textRight) {
   tft.setFont(SmallFont);
   tft.setTextColor(GRAY_600);
-  tft.setCursor(2, getLineTop(line));
+  tft.setCursor(LeftOfScreen, getLineTop(line));
   int lTop = getLineTop(line);
   int winWidth = tft.width();
 
@@ -148,45 +163,83 @@ void printText(int line, String textLeft, String textRight) {
 void printTextFancy(int line, String textLeft[], uint16_t leftColors[], int leftLen, String textRight[], uint16_t rightColors[], int rightLen) {
   tft.setFont(SmallFont);
   int lTop = getLineTop(line);
-  tft.setCursor(2, lTop);
   int winWidth = tft.width();
-
-  String allTextLeft = "";
-  for(int i = 0; i < leftLen; ++i) {
-    allTextLeft += textLeft[i];
+  if (leftLen > 10) {
+    Serial.println("TOO MANY LEFT STRINGS");
+    leftLen = 10;
   }
-  // Clear all First
-  if (allTextLeft != lastTextLeft[line]) {
-    int lastLWidth = getStringWidth(lastTextLeft[line]);
-    tft.fillRect(2, lTop - SmallFontHeight, lastLWidth, SmallFontHeight, GRAY_100);
-  }
-  String allTextRight = "";
-  for(int i = 0; i < rightLen; ++i) {
-    allTextRight += textRight[i];
-  }
-  if (allTextRight != "" && lastTextRight[line] != allTextRight) {
-    int lastRWidth = getStringWidth(lastTextRight[line]);
-    tft.fillRect(winWidth - lastRWidth - LeftOfScreen, lTop - SmallFontHeight, lastRWidth, SmallFontHeight, GRAY_100);
+  if (rightLen > 10) {
+    Serial.println("TOO MANY RIGHT STRINGS");
+    rightLen = 10;
   }
 
-  // Print all second
-  if (allTextLeft != lastTextLeft[line]) {
-    for(int i = 0; i < leftLen; ++i) {
-      tft.setTextColor(leftColors[i]);
-      tft.print(textLeft[i]);
+  // ====== Clear changed text first ======
+  // on the left, start at zero and clear everything after the first change (to the right)
+  String *lastLeftEntries = lastFancyTextLeft[line];
+  uint16_t *lastLeftColors = lastFancyTextLeftColors[line];
+  int i, leftPos = LeftOfScreen, fillWidth;
+  for(i = 0; i < leftLen; ++i) {
+    if (lastLeftEntries[i] != textLeft[i] || lastLeftColors[i] != leftColors[i]) {
+      break;
     }
-    lastTextLeft[line] = allTextLeft;
+    leftPos += getStringWidth(lastLeftEntries[i]) + 1;
   }
 
-  if (allTextRight != "" && lastTextRight[line] != allTextRight) {
-    int rWidth = getStringWidth(allTextRight);
-    tft.setCursor(winWidth - LeftOfScreen - rWidth, lTop);
-    for(int i = 0; i < rightLen; ++i) {
-      tft.setTextColor(rightColors[i]);
-      tft.print(textRight[i]);
-    }
+  int leftStartIndex = i;
+  if (leftStartIndex < leftLen) {
+    String diffText = "";
+    for(i = leftStartIndex; i < leftLen; ++i)
+      diffText += textLeft[i];
+    fillWidth = getStringWidth(diffText);
+    tft.fillRect(leftPos, lTop - SmallFontHeight, fillWidth, SmallFontHeight, GRAY_100);
+  }
 
-    lastTextRight[line] = allTextRight;
+  // on the right, start at (len - 1) and clear everything before the first change (to the left)
+  String *lastRightEntries = lastFancyTextRight[line];
+  uint16_t *lastRightColors = lastFancyTextRightColors[line];
+  int rightPos = winWidth - RightOfScreen;
+  if (rightLen > 1)
+    rightPos -= 4; //Hacks - tired of searching for this bug.
+  for(i = rightLen - 1; i >= 0; --i) {
+    if (lastRightEntries[i] != textRight[i] || lastRightColors[i] != rightColors[i])
+      break;
+    rightPos -= getStringWidth(lastRightEntries[i]) + 1;
+  }
+
+  int rightStartIndex = i;
+  if (rightStartIndex >= 0) {
+    String diffText = "";
+    fillWidth = 0;
+    for(i = 0; i <= rightStartIndex; ++i) {
+      diffText += textRight[i];
+      fillWidth += getStringWidth(textRight[i]) + 1;
+    }
+    tft.fillRect(rightPos - fillWidth, lTop - SmallFontHeight, fillWidth, SmallFontHeight, GRAY_100);
+  }
+
+  // ====== Print all text ======
+  // Left
+  tft.setCursor(leftPos, lTop);
+  for(i = leftStartIndex; i < leftLen; ++i) {
+    tft.setTextColor(leftColors[i]);
+    tft.print(textLeft[i]);
+  }
+
+  // Right
+  tft.setCursor(rightPos - fillWidth, lTop);
+  for(i = 0; i <= rightStartIndex; ++i) {
+    tft.setTextColor(rightColors[i]);
+    tft.print(textRight[i]);
+  }
+
+  // remember last text printed
+  for(i = 0; i < leftLen; ++i) {
+    lastFancyTextLeft[line][i] = textLeft[i];
+    lastFancyTextLeftColors[line][i] = leftColors[i];
+  }
+  for(i = 0; i < rightLen; ++i) {
+    lastFancyTextRight[line][i] = textRight[i];
+    lastFancyTextRightColors[line][i] = rightColors[i];
   }
 }
 

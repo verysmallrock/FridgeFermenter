@@ -89,6 +89,14 @@ void appModeChanged() {
   validateMinMaxTemp();
 }
 
+uint16_t _config1FieldColor(Config1CurrentEditField field) {
+  if (int(state.config1Field) == int(field)) {
+    return ORANGE_200;
+  } else {
+    return GRAY_600;
+  }
+}
+
 void drawDisplay() {
   if (state.currentAppMode == MODE_IDLE) {
     updateDisplay(false, false, true);
@@ -105,28 +113,59 @@ void drawDisplay() {
     updateDisplay(false, false, true);
 
     printTitle("Configuration");
+    
+    String left[5];
+    uint16_t leftColors[5];
+    String right[5];
+    uint16_t rightColors[5];
 
-    sprintf(buffer1, "%d - %d F", state.targetMinTemp, state.targetMaxTemp);
-    //printText(1, "Temp", buffer1);
-    String left[] = { "Temp" };
-    uint16_t leftColors[] = { GRAY_600 };
-    String right[] = { "70", " - ", "80 F" };
-    uint16_t rightColors[] = { ORANGE_200, GRAY_600, GRAY_600 };
+    left[0] = "Temp";
+    leftColors[0] = GRAY_600;
+    sprintf(buffer1, "%d", state.targetMinTemp); right[0] = buffer1;
+    sprintf(buffer1, " - "); right[1] = buffer1;
+    sprintf(buffer1, "%d F", state.targetMaxTemp); right[2] = buffer1;
+    rightColors[0] = _config1FieldColor(tempLow);
+    rightColors[1] = GRAY_600;
+    rightColors[2] = _config1FieldColor(tempHigh);
     printTextFancy(1, left, leftColors, 1, right, rightColors, 3);
 
-    sprintf(buffer1, "%d F", state.tempFloat);
-    printText(2, "  - Float", buffer1);
+    left[0] = "  - Float";
+    leftColors[0] = GRAY_600;
+    sprintf(buffer1, "     %d F", state.tempFloat); right[0] = buffer1;
+    rightColors[0] = _config1FieldColor(tempFloat);
+    printTextFancy(2, left, leftColors, 1, right, rightColors, 1);
 
-    sprintf(buffer1, "%d - %d %%", state.targetMinHumidity, state.targetMaxHumidity);
-    printText(3, "Humidity", buffer1);
+    left[0] = "Humidity";
+    leftColors[0] = GRAY_600;
+    sprintf(buffer1, "%d", state.targetMinHumidity); right[0] = buffer1;
+    sprintf(buffer1, " - "); right[1] = buffer1;
+    sprintf(buffer1, "%d %%", state.targetMaxHumidity); right[2] = buffer1;
+    rightColors[0] = _config1FieldColor(humLow);
+    rightColors[1] = GRAY_600;
+    rightColors[2] = _config1FieldColor(humHigh);
+    printTextFancy(3, left, leftColors, 1, right, rightColors, 3);
 
-    sprintf(buffer1, "%d %%", state.humidityFloat);
-    printText(4, "  - Float", buffer1);
+    left[0] = "  - Float";
+    leftColors[0] = GRAY_600;
+    sprintf(buffer1, "%d %%", state.humidityFloat); right[0] = buffer1;
+    rightColors[0] = _config1FieldColor(humFloat);
+    printTextFancy(4, left, leftColors, 1, right, rightColors, 1);
 
-    sprintf(buffer1, "%ds / %dm ", state.fanDurationSeconds, state.fanIntervalMinutes);
-    printText(5, "Fan", buffer1);
+    left[0] = "Fan";
+    leftColors[0] = GRAY_600;
+    sprintf(buffer1, "%ds", state.fanDurationSeconds); right[0] = buffer1;
+    sprintf(buffer1, " / "); right[1] = buffer1;
+    sprintf(buffer1, "%dm", state.fanIntervalMinutes); right[2] = buffer1;
+    rightColors[0] = _config1FieldColor(fanDuration);
+    rightColors[1] = GRAY_600;
+    rightColors[2] = _config1FieldColor(fanPeriod);
+    printTextFancy(5, left, leftColors, 1, right, rightColors, 3);
 
-    printText(6, "", "Exit");
+    left[0] = "";
+    leftColors[0] = GRAY_600;
+    right[0] = "Exit";
+    rightColors[0] = _config1FieldColor(Exit);
+    printTextFancy(6, left, leftColors, 1, right, rightColors, 1);
   }
 }
 
@@ -146,6 +185,9 @@ void onInputLongPress() {
 void onInputChange(int direction) {
   Serial.println("Encoder " + String(direction));
   state.lastInputTime = millis();
+  if (state.currentAppMode == MODE_CONFIG_1) {
+    nextConfig1EditField(direction);
+  }
 }
 
 bool toggle = false;
