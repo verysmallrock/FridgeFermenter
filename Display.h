@@ -11,7 +11,10 @@
 #define GRAY_500 0xB596 // 177
 #define GRAY_600 0xDEDB // 216
 #define GRAY_700 0xFFFF // 255
-#define ORANGE_200 0xEAA2 // 237, 86, 21
+// use http://www.barth-dev.de/online/rgb565-color-picker/
+#define YELLOW_200 0xEEA7 //238, 214, 58
+#define ORANGE_200 0xEB87 // 238, 112, 58
+#define GREEN_200 0x4F67 // 79, 238, 58
 
 void setupDisplay();
 void updateDisplay(bool bg, bool title, bool text);

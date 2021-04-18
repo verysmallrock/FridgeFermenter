@@ -53,6 +53,24 @@ void nextConfig1EditField(int direction) {
   state.config1Field = Config1CurrentEditField(c1editFields[field]);
 }
 
+int * getCurrentConfig1Field() {
+  switch(state.config1Field) {
+    case tempLow: return &state.targetMinTemp;
+    case tempHigh: return &state.targetMaxTemp;
+    case tempFloat: return &state.tempFloat;
+    case humLow: return &state.targetMinHumidity;
+    case humHigh: return &state.targetMaxHumidity;
+    case humFloat: return &state.humidityFloat;
+    case fanDuration: return &state.fanDurationSeconds;
+    case fanPeriod: return &state.fanIntervalMinutes;
+  }
+}
+
+void changeCurrentConfig1Field(int delta) {
+  int * fieldToEdit = getCurrentConfig1Field();
+  *fieldToEdit = *fieldToEdit + delta;
+}
+
 void exitEditingIfIdle() {
   if (state.currentAppMode != MODE_IDLE) {
     if ((millis() - state.lastInputTime) > state.maxIdleTime) {

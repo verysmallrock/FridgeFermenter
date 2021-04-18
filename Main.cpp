@@ -91,7 +91,15 @@ void appModeChanged() {
 
 uint16_t _config1FieldColor(Config1CurrentEditField field) {
   if (int(state.config1Field) == int(field)) {
-    return ORANGE_200;
+    if (state.editingCurrentField) {
+      int blinkPeriod = 900;
+      if ((millis() % blinkPeriod) < blinkPeriod / 3)
+        return GRAY_100;
+      else
+        return GREEN_200;
+    }
+    else
+      return YELLOW_200;
   } else {
     return GRAY_600;
   }
@@ -113,7 +121,7 @@ void drawDisplay() {
     updateDisplay(false, false, true);
 
     printTitle("Configuration");
-    
+
     String left[5];
     uint16_t leftColors[5];
     String right[5];
@@ -171,13 +179,24 @@ void drawDisplay() {
 
 void onInputPress() {
   Serial.println("click");
-  nextAppMode();
+  if (state.currentAppMode == MODE_CONFIG_1) {
+    if (state.config1Field == Exit) {
+      nextAppMode(MODE_IDLE);
+    } else {
+      state.editingCurrentField = !state.editingCurrentField;
+    }
+  } else {
+    nextAppMode();
+  }
   state.lastInputTime = millis();
 }
 
 bool fanOn = false;
 void onInputLongPress() {
-  Serial.println("held down");
+  if (state.currentAppMode == MODE_CONFIG_1) {
+    state.editingCurrentField = false;
+    nextAppMode(MODE_IDLE);
+  }
   fanOn = !fanOn;
   analogWrite(FAN_PIN_1, fanOn ? 255: 0);
 }
@@ -186,7 +205,11 @@ void onInputChange(int direction) {
   Serial.println("Encoder " + String(direction));
   state.lastInputTime = millis();
   if (state.currentAppMode == MODE_CONFIG_1) {
-    nextConfig1EditField(direction);
+    if (state.editingCurrentField) {
+      changeCurrentConfig1Field(direction);
+    } else {
+      nextConfig1EditField(direction);
+    }
   }
 }
 

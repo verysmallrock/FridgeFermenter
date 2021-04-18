@@ -27,6 +27,7 @@ struct AppState {
 	unsigned long maxIdleTime;
 	int currentAppMode;
 	Config1CurrentEditField config1Field;
+	boolean editingCurrentField;
 
 	/*  Sensor State */
 	float currentTemp;
@@ -65,6 +66,7 @@ struct AppState {
 	15000, /* unsigned long maxIdleTime; */ \
 	MODE_IDLE, /* currentAppMode */ \
 	tempLow, /* Config1CurrentEditField config1Field; */ \
+	false, /* boolean editingCurrentField; */ \
 	\
 	0, /* float currentTemp; */ \
 	0, /* float currentHumidity; */ \
@@ -102,6 +104,7 @@ void saveAppState();
 
 void nextAppMode(int forceMode = NULL);
 void nextConfig1EditField(int direction);
+void changeCurrentConfig1Field(int delta);
 void exitEditingIfIdle();
 
 #endif
