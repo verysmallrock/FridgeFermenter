@@ -55,10 +55,13 @@ String getHumidityActivityString() {
 }
 
 void initializeMinMax(float currentTemp, float currentHumidity) {
-  state.minTemp = int(currentTemp) - state.tempWidth;
-  state.maxTemp = int(currentTemp) + state.tempWidth;
-  state.minHumidity = int(currentHumidity) - state.humidityWidth;
-  state.maxHumidity = int(currentHumidity) + state.humidityWidth;
+  int floatRange = int(state.tempFloat * 1.8);
+  state.minTemp = state.targetMinTemp - floatRange;
+  state.maxTemp = state.targetMaxTemp + floatRange;
+
+  int humidityFloat = int(state.humidityFloat * 1.8);
+  state.minHumidity = state.targetMinHumidity - floatRange;
+  state.maxHumidity = state.targetMaxHumidity + floatRange;
 
   if (state.currentAppMode == MODE_IDLE) {
     sprintf(buffer1, "%d F", state.minTemp);

@@ -14,18 +14,23 @@ void loadAppState() {
     Serial.println("State.valid is " + String(state.valid));
     state = DEFAULT_STATE;
     Serial.println("initialzed and saving state" + String(state.valid) + " " + String(state.lastInputTime));
-    saveAppState();
   } else {
     Serial.println("State loaded");
   }
 }
 
+boolean appStateChanged = false;
 void saveAppState() {
-  // uncomment this later when we're ready to roll
-  //state_store.write(state);
+  if (!appStateChanged) {
+    return;
+  }
+  Serial.println("Saving app state");
+  state_store.write(state);
+  appStateChanged = false;
 }
 
 void nextAppMode(int forceMode) {
+  int lastAppMode = state.currentAppMode;
   if (forceMode != NULL) {
     state.currentAppMode = forceMode;
   } else {
@@ -34,6 +39,9 @@ void nextAppMode(int forceMode) {
   if (state.currentAppMode > MODE_MAX) {
     state.currentAppMode = MODE_IDLE;
   }
+
+  if (lastAppMode != MODE_IDLE && state.currentAppMode == MODE_IDLE)
+    saveAppState();
   appModeChanged();
 }
 
@@ -69,6 +77,7 @@ int * getCurrentConfig1Field() {
 void changeCurrentConfig1Field(int delta) {
   int * fieldToEdit = getCurrentConfig1Field();
   *fieldToEdit = *fieldToEdit + delta;
+  appStateChanged = true;
 }
 
 void exitEditingIfIdle() {

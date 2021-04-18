@@ -39,14 +39,12 @@ struct AppState {
 	int targetMinTemp;
 	int targetMaxTemp;
 	int tempFloat;
-	int tempWidth;
 
 	int minHumidity;
 	int maxHumidity;
 	int targetMinHumidity;
 	int targetMaxHumidity;
 	int humidityFloat;
-	int humidityWidth;
 
 	int fanDurationSeconds;
 	int fanIntervalMinutes;
@@ -76,14 +74,12 @@ struct AppState {
 	65, /* int targetMinTemp; */ \
 	70, /* int targetMaxTemp; */ \
 	3, /* int tempFloat; */ \
-	10, /* int tempWidth; */ \
 	\
 	55, /* int minHumidity; */ \
 	90, /* int maxHumidity; */ \
 	70, /* int targetMinHumidity; */ \
 	75, /* int targetMaxHumidity; */ \
 	3, /* int humidityFloat; */ \
-	10, /* int humidityWidth; */ \
 	\
 	30, /* int fanDurationSeconds; */ \
 	180, /* int fanIntervalMinutes; */ \
