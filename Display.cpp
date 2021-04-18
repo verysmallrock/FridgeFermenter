@@ -77,6 +77,9 @@ String lastFancyTextRight[10][10];
 uint16_t lastFancyTextLeftColors[10][10];
 uint16_t lastFancyTextRightColors[10][10];
 
+// last strings printed on the graph
+String lastGraphStrings[10][10];
+
 void setupDisplay() {
   correctFontY(7, Helvetica_Bold.last - Helvetica_Bold.first, Helvetica_Bold.glyph);
   correctFontY(5, FreeUniversal.last - FreeUniversal.first, FreeUniversal.glyph);
@@ -98,6 +101,7 @@ void drawBackground() {
     lastTextRight[i] = "";
 
     for (int j = 0; j < 10; ++j) {
+      lastGraphStrings[i][j] = "";
       lastFancyTextLeft[i][j] = "";
       lastFancyTextRight[i][j] = "";
       lastFancyTextLeftColors[i][j] = 0;
@@ -124,6 +128,8 @@ int getStringWidth(String str) {
   int16_t  x1, y1;
   uint16_t w, h;
   tft.getTextBounds(str, 0, 0, &x1, &y1, &w, &h);
+  if (w > 200)
+    w = 0;
   return w;
 }
 
@@ -261,12 +267,16 @@ void _printGraphText(int line, String minStr, String maxStr, String bottomRightS
   tft.print(minStr);
 
   int winWidth = tft.width();
+  if (lastGraphStrings[line][2] != bottomRightStr) {
+    int stringWidth = getStringWidth(lastGraphStrings[line][2]);
+    tft.fillRect(winWidth - LeftOfScreen - stringWidth - 2, getLineTop(line + 1) - SmallFontHeight, stringWidth + 1, SmallFontHeight, GRAY_200);
+    lastGraphStrings[line][2] = bottomRightStr;
+  }
   int rWidth = getStringWidth(bottomRightStr);
   tft.setCursor(winWidth - LeftOfScreen - rWidth - 2, getLineTop(line + 1));
   tft.print(bottomRightStr);
 }
 
-String lastGraphStrings[10][10];
 void printGraphBg(int line, String minStr, String maxStr, String bottomRightStr) {
   tft.fillRect(LeftOfScreen, getLineTop(line - 1) + LineSpacing, tft.width() - LeftOfScreen * 2, SmallFontHeight * 3 - LineSpacing * 2, GRAY_200);
 
@@ -274,6 +284,10 @@ void printGraphBg(int line, String minStr, String maxStr, String bottomRightStr)
   lastGraphStrings[line][0] = minStr;
   lastGraphStrings[line][1] = maxStr;
   lastGraphStrings[line][2] = bottomRightStr;
+}
+
+void setGraphBottomRightStr(int line, String bottomRightStr) {
+  _printGraphText(line, lastGraphStrings[line][0], lastGraphStrings[line][1], bottomRightStr);
 }
 
 int lastLinePositions[10] = { 0 };

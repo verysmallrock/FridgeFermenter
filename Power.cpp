@@ -1,4 +1,5 @@
 #include "Power.h"
+#include "AppState.h"
 
 void setupPower() {
 	pinMode(RELAY_PIN_HUMIDIFIER, OUTPUT);
@@ -13,17 +14,21 @@ void setupPower() {
 }
 
 void activateHumidifier(int active) {
+	state.humidActive == active == POWER_ON;
 	digitalWrite(RELAY_PIN_HUMIDIFIER, active);
 }
 
 void activateDehumidifier(int active) {
+	state.dehumidActive == active == POWER_ON;
 	digitalWrite(RELAY_PIN_DEHUMIDIFIER, active);
 }
 
 void activateFridge(int active) {
+	state.coolingActive == active == POWER_ON;
 	digitalWrite(RELAY_PIN_FRIDGE, active);
 }
 
 void activateHeat(int active) {
+	state.heatingActive == active == POWER_ON;
 	digitalWrite(RELAY_PIN_HEAT, active);
 }

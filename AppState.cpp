@@ -13,7 +13,6 @@ void loadAppState() {
   if (state.valid == false) {
     Serial.println("State.valid is " + String(state.valid));
     state = DEFAULT_STATE;
-    Serial.println("initialzed and saving state" + String(state.valid) + " " + String(state.lastInputTime));
   } else {
     Serial.println("State loaded");
   }

@@ -111,6 +111,8 @@ uint16_t _config1FieldColor(Config1CurrentEditField field) {
 void drawDisplay() {
   if (state.currentAppMode == MODE_IDLE) {
     updateDisplay(false, false, true);
+    setGraphBottomRightStr(2, getTempActivityString());
+    setGraphBottomRightStr(5, getHumidityActivityString());
 
     printTitle("Aging Box 0.1");
     sprintf(buffer1, "%0.1f F", state.currentTemp);
@@ -218,11 +220,50 @@ void onInputChange(int direction) {
 
 bool toggle = false;
 void updateRelays() {
-  //toggle = !toggle;
-  //activateHumidifier(toggle ? POWER_ON : POWER_OFF);
-  // activateDehumidifier(toggle ? POWER_ON : POWER_OFF);
-  // activateFridge(toggle ? POWER_ON : POWER_OFF);
-  // activateHeat(toggle ? POWER_ON : POWER_OFF);
+  if (state.currentAppMode != MODE_IDLE || state.currentTemp <= 0) { return; }
+
+  int allowedMinTemp = state.targetMinTemp;
+  if (state.tempDirection == DECREASE)
+    allowedMinTemp -= state.tempFloat;
+  int allowedMaxTemp = state.targetMaxTemp;
+  if (state.tempDirection == INCREASE)
+    allowedMaxTemp += state.tempFloat;
+
+  if (state.currentTemp < allowedMinTemp){
+    activateHeat(POWER_ON);
+    activateFridge(POWER_OFF);
+    state.tempDirection = INCREASE;
+  } else if (state.currentTemp > allowedMaxTemp)  {
+    activateHeat(POWER_OFF);
+    activateFridge(POWER_ON);
+    state.tempDirection = DECREASE;
+  } else {
+    activateHeat(POWER_OFF);
+    activateFridge(POWER_OFF);
+    state.tempDirection = INACTIVE;
+  }
+
+  int allowedMinHumidity = state.targetMinHumidity;
+  if (state.humidityDirection == DECREASE)
+    allowedMinHumidity -= state.humidityFloat;
+  int allowedMaxHumidity = state.targetMaxHumidity;
+  if (state.humidityDirection == INCREASE)
+    allowedMaxHumidity += state.humidityFloat;
+
+  if (state.currentHumidity < allowedMinHumidity){
+    activateHumidifier(POWER_ON);
+    activateDehumidifier(POWER_OFF);
+    state.humidityDirection = INCREASE;
+  } else if (state.currentHumidity > allowedMaxHumidity)  {
+    activateHumidifier(POWER_OFF);
+    activateDehumidifier(POWER_ON);
+    state.humidityDirection = DECREASE;
+  } else {
+    activateHumidifier(POWER_OFF);
+    activateDehumidifier(POWER_OFF);
+    state.humidityDirection = INACTIVE;
+  }
+
 }
 
 void logSensorsToCloud() {

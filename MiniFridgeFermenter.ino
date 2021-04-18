@@ -45,7 +45,7 @@ void setup() {
 
   pinMode(FAN_PIN_1, OUTPUT);
 
-  taskManager.scheduleFixedRate(100, readAndRedraw);
+  taskManager.scheduleFixedRate(500, readAndRedraw);
   //taskManager.scheduleFixedRate(15000, logData);
   taskManager.scheduleFixedRate(1000, updateRelayStates);
   taskManager.scheduleFixedRate(1000, exitEditingIfIdle);
