@@ -37,7 +37,6 @@ void setup() {
 
   mainSetup();
   Serial.println("Appstate load");
-  loadAppState();
   setupInput(onEncoderClick, onEncoderRotate);
   delay(2000);
   updateDisplay(true, false, false);
@@ -49,6 +48,7 @@ void setup() {
   //taskManager.scheduleFixedRate(15000, logData);
   taskManager.scheduleFixedRate(1000, updateRelayStates);
   taskManager.scheduleFixedRate(1000, exitEditingIfIdle);
+  taskManager.scheduleFixedRate(5000, updateFans);
 }
 
 void onEncoderRotate(int newValue) {

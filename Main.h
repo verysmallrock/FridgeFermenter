@@ -12,6 +12,7 @@ void validateMinMaxTemp();
 void logSensorsToCloud();
 void drawDisplay();
 void updateRelays();
+void updateFans();
 void appModeChanged();
 
 void onInputPress();

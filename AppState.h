@@ -57,6 +57,9 @@ struct AppState {
 	int humidityDirection;
 	bool humidActive;
 	bool dehumidActive;
+
+	bool fanActive;
+	unsigned long lastFanUpdate;
 };
 #define DEFAULT_STATE { \
 	true, /* valid;*/ \
@@ -91,6 +94,8 @@ struct AppState {
 	INACTIVE, /* int8_t humidityDirection; */ \
 	false, /* bool humidActive; */ \
 	false, /* bool dehumidActive; */ \
+	false, /* bool fanActive; */ \
+	0, /*unsigned long lastFanUpdate; */ \
 }
 
 extern AppState state;

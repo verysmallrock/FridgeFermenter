@@ -2,7 +2,6 @@
 #include "Main.h"
 #include <FlashStorage.h>
 
-
 AppState state;
 FlashStorage(state_store, AppState);
 
@@ -16,6 +15,7 @@ void loadAppState() {
   } else {
     Serial.println("State loaded");
   }
+  state.lastFanUpdate = 0;
 }
 
 boolean appStateChanged = false;

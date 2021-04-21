@@ -10,6 +10,7 @@ DHT dht(TEMPHUMIDITY_PIN, DHT22);
 
 void mainSetup() {
   int line = 1;
+  loadAppState();
   setupDisplay();
   printTitle("Initializing...");
 
@@ -196,12 +197,14 @@ void onInputPress() {
   state.lastInputTime = millis();
 }
 
+
 bool fanOn = false;
 void onInputLongPress() {
   if (state.currentAppMode == MODE_CONFIG_1) {
     state.editingCurrentField = false;
     nextAppMode(MODE_IDLE);
   }
+
   fanOn = !fanOn;
   analogWrite(FAN_PIN_1, fanOn ? 255: 0);
 }
@@ -263,7 +266,26 @@ void updateRelays() {
     activateDehumidifier(POWER_OFF);
     state.humidityDirection = INACTIVE;
   }
+}
 
+void updateFans() {
+  if (state.fanActive) {
+    if (millis() - state.lastFanUpdate > (state.fanDurationSeconds * 1000)) {
+      Serial.println("Deactivating Fans");
+      analogWrite(FAN_PIN_1, 0);
+      state.fanActive = false;
+      state.lastFanUpdate = millis();
+    }
+
+  } else {
+    if (millis() - state.lastFanUpdate > (state.fanIntervalMinutes * 60 * 1000)) {
+      Serial.println("Activating Fans");
+      analogWrite(FAN_PIN_1, 255);
+      state.fanActive = true;
+      state.lastFanUpdate = millis();
+    }
+
+  }
 }
 
 void logSensorsToCloud() {
