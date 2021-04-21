@@ -128,7 +128,7 @@ void changeCurrentConfig1Field(int delta) {
 void exitEditingIfIdle() {
   if (state.currentAppMode != MODE_IDLE) {
     if ((millis() - state.lastInputTime) > state.maxIdleTime) {
-      nextAppMode(MODE_IDLE);
+      //nextAppMode(MODE_IDLE);
     }
   }
 }

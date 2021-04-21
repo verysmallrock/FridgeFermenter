@@ -145,7 +145,7 @@ void drawDisplay() {
 
     left[0] = "  - Float";
     leftColors[0] = GRAY_600;
-    sprintf(buffer1, "     %d F", state.tempFloat); right[0] = buffer1;
+    sprintf(buffer1, "%d F", state.tempFloat); right[0] = buffer1;
     rightColors[0] = _config1FieldColor(tempFloat);
     printTextFancy(2, left, leftColors, 1, right, rightColors, 1);
 

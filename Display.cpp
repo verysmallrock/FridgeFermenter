@@ -181,6 +181,7 @@ void printTextFancy(int line, String textLeft[], uint16_t leftColors[], int left
 
   // ====== Clear changed text first ======
   // on the left, start at zero and clear everything after the first change (to the right)
+  String sumText = "";
   String *lastLeftEntries = lastFancyTextLeft[line];
   uint16_t *lastLeftColors = lastFancyTextLeftColors[line];
   int i, leftPos = LeftOfScreen, fillWidth;
@@ -188,39 +189,54 @@ void printTextFancy(int line, String textLeft[], uint16_t leftColors[], int left
     if (lastLeftEntries[i] != textLeft[i] || lastLeftColors[i] != leftColors[i]) {
       break;
     }
-    leftPos += getStringWidth(lastLeftEntries[i]) + 1;
+    sumText += getStringWidth(lastLeftEntries[i]);
   }
+  leftPos += getStringWidth(sumText);
 
   int leftStartIndex = i;
+  sumText = "";
   if (leftStartIndex < leftLen) {
-    String diffText = "";
     for(i = leftStartIndex; i < leftLen; ++i)
-      diffText += textLeft[i];
-    fillWidth = getStringWidth(diffText);
+      sumText += textLeft[i];
+  }
+  fillWidth = getStringWidth(sumText);
+  if (fillWidth > 0) {
     tft.fillRect(leftPos, lTop - SmallFontHeight, fillWidth, SmallFontHeight, GRAY_100);
   }
 
   // on the right, start at (len - 1) and clear everything before the first change (to the left)
+  sumText = "";
   String *lastRightEntries = lastFancyTextRight[line];
   uint16_t *lastRightColors = lastFancyTextRightColors[line];
-  int rightPos = winWidth - RightOfScreen;
-  if (rightLen > 1)
-    rightPos -= 4; //Hacks - tired of searching for this bug.
+  int rightPos = winWidth - RightOfScreen - 1;
   for(i = rightLen - 1; i >= 0; --i) {
     if (lastRightEntries[i] != textRight[i] || lastRightColors[i] != rightColors[i])
       break;
-    rightPos -= getStringWidth(lastRightEntries[i]) + 1;
+    sumText += lastRightEntries[i];
   }
+  if (i > 0 && i < rightLen - 2 && rightLen > 1) {
+    // Hack -- include " - " and " / " if there are changes
+    sumText += lastRightEntries[i];
+    ++i;
+  }
+  if (sumText != "") {
+    rightPos -= RightOfScreen;
+  }
+  rightPos -= getStringWidth(sumText);
 
+  sumText = "";
   int rightStartIndex = i;
+  fillWidth = 0;
   if (rightStartIndex >= 0) {
-    String diffText = "";
-    fillWidth = 0;
     for(i = 0; i <= rightStartIndex; ++i) {
-      diffText += textRight[i];
-      fillWidth += getStringWidth(textRight[i]) + 1;
+      sumText += textRight[i];
     }
-    tft.fillRect(rightPos - fillWidth, lTop - SmallFontHeight, fillWidth, SmallFontHeight, GRAY_100);
+
+  }
+  fillWidth += getStringWidth(sumText);
+  if (fillWidth > 0) {
+    int clearCorrection = 15;
+    tft.fillRect(rightPos - fillWidth - clearCorrection, lTop - SmallFontHeight, fillWidth + clearCorrection + 1, SmallFontHeight, GRAY_100);
   }
 
   // ====== Print all text ======
