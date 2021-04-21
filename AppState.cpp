@@ -73,9 +73,55 @@ int * getCurrentConfig1Field() {
   }
 }
 
+
+#define MIN_TEMP 36
+#define MAX_TEMP 120
+#define MIN_TEMP_RANGE 3
+#define MIN_HUMIDITY 15
+#define MAX_HUMIDITY 99
+#define MIN_HUMIDITY_RANGE 3
+#define MIN_FLOAT 1
+#define MAX_FLOAT 30
+#define MIN_FAN_DURATION 5 // seconds
+#define MAX_FAN_DURATION 300
+#define MIN_FAN_PERIOD 1 // minutes
+#define MAX_FAN_PERIOD 999
+
+int clamp(int value, int minValue, int maxValue) {
+  return min(max(value, minValue), maxValue);
+}
+
+int validateCurrentConfig1Field(int currentField) {
+  switch(state.config1Field) {
+    case tempLow: return clamp(currentField, MIN_TEMP, MAX_TEMP - MIN_TEMP_RANGE);
+    case tempHigh: return clamp(currentField, MIN_TEMP + MIN_TEMP_RANGE, MAX_TEMP);
+    case tempFloat: return clamp(currentField, MIN_FLOAT, MAX_FLOAT);
+    case humLow: return clamp(currentField, MIN_HUMIDITY, MAX_HUMIDITY - MIN_HUMIDITY_RANGE);
+    case humHigh: return clamp(currentField, MIN_HUMIDITY + MIN_HUMIDITY_RANGE, MAX_HUMIDITY);
+    case humFloat: return clamp(currentField, MIN_FLOAT, MAX_FLOAT);
+    case fanDuration: return clamp(currentField, MIN_FAN_DURATION, MAX_FAN_DURATION);
+    case fanPeriod: return clamp(currentField, MIN_FAN_PERIOD, MAX_FAN_PERIOD);
+  }
+}
+
+void correctRelatedConfig1Field(int currentField) {
+  // assume currentField is VALID
+  switch(state.config1Field) {
+    case tempLow: state.targetMaxTemp = clamp(state.targetMaxTemp, currentField + MIN_TEMP_RANGE, MAX_TEMP); break;
+    case tempHigh: state.targetMinTemp = clamp(state.targetMinTemp, MIN_TEMP, currentField - MIN_TEMP_RANGE); break;
+    case tempFloat: return;
+    case humLow: state.targetMaxHumidity = clamp(state.targetMaxHumidity, currentField + MIN_HUMIDITY_RANGE, MAX_HUMIDITY); break;
+    case humHigh: state.targetMinHumidity = clamp(state.targetMinHumidity, MIN_HUMIDITY, currentField - MIN_HUMIDITY_RANGE);
+    case humFloat: return;
+    case fanDuration: return;
+    case fanPeriod: return;
+  }
+}
+
 void changeCurrentConfig1Field(int delta) {
   int * fieldToEdit = getCurrentConfig1Field();
-  *fieldToEdit = *fieldToEdit + delta;
+  *fieldToEdit = validateCurrentConfig1Field(*fieldToEdit + delta);
+  correctRelatedConfig1Field(*fieldToEdit);
   appStateChanged = true;
 }
 
