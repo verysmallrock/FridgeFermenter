@@ -1,6 +1,7 @@
 #include "SheetLogger.h"
 #include <WiFiNINA.h>
 #include <ArduinoHttpClient.h>
+#include "Secrets.h"
 
 String sheetHumid = "";
 String sheetTemp = "";
