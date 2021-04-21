@@ -72,20 +72,20 @@ struct AppState {
 	0, /* float currentTemp; */ \
 	0, /* float currentHumidity; */ \
 	\
-	40, /* int minTemp; */ \
-	90, /* int maxTemp; */ \
-	65, /* int targetMinTemp; */ \
-	70, /* int targetMaxTemp; */ \
-	3, /* int tempFloat; */ \
+	47, /* int minTemp;  Graphed min temp */ \
+	63, /* int maxTemp;  Graphed max temp */ \
+	53, /* int targetMinTemp; User-chosen */ \
+	57, /* int targetMaxTemp; User-chosen */ \
+	3, /* int tempFloat; User-chosen */ \
 	\
-	55, /* int minHumidity; */ \
-	90, /* int maxHumidity; */ \
-	70, /* int targetMinHumidity; */ \
-	75, /* int targetMaxHumidity; */ \
-	3, /* int humidityFloat; */ \
+	73, /* int minHumidity; Graphed min */ \
+	88, /* int maxHumidity;  Graphed max */ \
+	79, /* int targetMinHumidity; User-chosen */ \
+	83, /* int targetMaxHumidity; User-chosen */ \
+	3, /* int humidityFloat; User-chosen */ \
 	\
-	30, /* int fanDurationSeconds; */ \
-	180, /* int fanIntervalMinutes; */ \
+	30, /* int fanDurationSeconds; User-chosen */ \
+	180, /* int fanIntervalMinutes; User-chosen */ \
 	\
 	INACTIVE, /* int8_t tempDirection; */ \
 	false, /* bool heatingActive; */ \
