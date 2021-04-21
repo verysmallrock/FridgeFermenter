@@ -9,12 +9,23 @@
 void onEncoderClick(uint8_t, bool);
 void onEncoderRotate(int);
 
+
+int IdleDisplayUpdateRate = 10000;
+int ConfigDisplayUpdateRate = 220; // update fast in config mode
+unsigned long readTimer;
+
 void readAndRedraw() {
+  unsigned long now = millis();
   if (state.currentAppMode == MODE_IDLE) {
     readSensors();
+    bool drawNextPoint = now - readTimer > IdleDisplayUpdateRate;
+    drawDisplay(drawNextPoint);
+    if (drawNextPoint)
+      readTimer = now;
+  } else if (state.currentAppMode == MODE_CONFIG_1 && now - readTimer > ConfigDisplayUpdateRate) {
+    drawDisplay();
+    readTimer = now;
   }
-
-  drawDisplay();
 }
 
 void logData() {
@@ -33,6 +44,7 @@ void updateRelayStates() {
 
 void setup() {
   Serial.begin(115200);
+  readTimer = millis();
   delay(50);
 
   mainSetup();
@@ -44,11 +56,16 @@ void setup() {
 
   pinMode(FAN_PIN_1, OUTPUT);
 
-  taskManager.scheduleFixedRate(500, readAndRedraw);
-  //taskManager.scheduleFixedRate(15000, logData);
-  taskManager.scheduleFixedRate(1000, updateRelayStates);
-  taskManager.scheduleFixedRate(1000, exitEditingIfIdle);
+  taskManager.scheduleFixedRate(220, readAndRedraw);
+  taskManager.scheduleFixedRate(60000, logData);
+  taskManager.scheduleFixedRate(2500, updateRelayStates);
+  taskManager.scheduleFixedRate(2500, exitEditingIfIdle);
   taskManager.scheduleFixedRate(5000, updateFans);
+
+
+  // init display
+  readSensors();
+  drawDisplay(true);
 }
 
 void onEncoderRotate(int newValue) {
@@ -56,6 +73,7 @@ void onEncoderRotate(int newValue) {
 }
 
 void onEncoderClick(uint8_t pin, bool heldDown) {
+  readTimer = millis();
   if(heldDown) {
     onInputLongPress();
   } else {

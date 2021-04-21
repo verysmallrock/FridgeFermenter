@@ -91,6 +91,7 @@ void appModeChanged() {
 
   minMaxInitialized = false;
   validateMinMaxTemp();
+  drawDisplay(true);
 }
 
 uint16_t _config1FieldColor(Config1CurrentEditField field) {
@@ -109,20 +110,22 @@ uint16_t _config1FieldColor(Config1CurrentEditField field) {
   }
 }
 
-void drawDisplay() {
+void drawDisplay(bool drawNextPoint) {
   if (state.currentAppMode == MODE_IDLE) {
     updateDisplay(false, false, true);
     setGraphBottomRightStr(2, getTempActivityString());
     setGraphBottomRightStr(5, getHumidityActivityString());
 
-    printTitle("Aging Box 0.1");
+    printTitle("Aging Box");
     sprintf(buffer1, "%0.1f F", state.currentTemp);
     printText(1, "Temperature", buffer1);
-    printNextGraphPoint(2, (state.currentTemp - state.minTemp) / (state.maxTemp - state.minTemp));
+    if (drawNextPoint)
+      printNextGraphPoint(2, (state.currentTemp - state.minTemp) / (state.maxTemp - state.minTemp));
 
     sprintf(buffer1, "%0.1f %%", state.currentHumidity);
     printText(4, "Humidity", buffer1);
-    printNextGraphPoint(5, (state.currentHumidity - state.minHumidity) / (state.maxHumidity - state.minHumidity));
+    if (drawNextPoint)
+      printNextGraphPoint(5, (state.currentHumidity - state.minHumidity) / (state.maxHumidity - state.minHumidity));
   } else if (state.currentAppMode == MODE_CONFIG_1) {
     updateDisplay(false, false, true);
 

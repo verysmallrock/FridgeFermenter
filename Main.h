@@ -10,7 +10,7 @@ void mainSetup();
 void readSensors();
 void validateMinMaxTemp();
 void logSensorsToCloud();
-void drawDisplay();
+void drawDisplay(bool drawNextPoint = false);
 void updateRelays();
 void updateFans();
 void appModeChanged();
