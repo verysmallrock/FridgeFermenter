@@ -87,6 +87,13 @@ void validateMinMaxTemp() {
 }
 
 void appModeChanged() {
+  if (state.currentAppMode == MODE_CONFIG_1) {
+    // turn things off while editing
+    activateHeat(POWER_OFF);
+    activateFridge(POWER_OFF);
+    activateHumidifier(POWER_OFF);
+    activateDehumidifier(POWER_OFF);
+  }
   updateDisplay(true, false, false);
 
   minMaxInitialized = false;
