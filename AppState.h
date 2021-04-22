@@ -81,8 +81,8 @@ struct AppState {
 	73, /* int minHumidity; Graphed min */ \
 	88, /* int maxHumidity;  Graphed max */ \
 	79, /* int targetMinHumidity; User-chosen */ \
-	83, /* int targetMaxHumidity; User-chosen */ \
-	5, /* int humidityFloat; User-chosen */ \
+	82, /* int targetMaxHumidity; User-chosen */ \
+	7, /* int humidityFloat; User-chosen */ \
 	\
 	30, /* int fanDurationSeconds; User-chosen */ \
 	180, /* int fanIntervalMinutes; User-chosen */ \
