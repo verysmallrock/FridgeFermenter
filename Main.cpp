@@ -38,21 +38,19 @@ void readSensors() {
 }
 
 String getTempActivityString() {
-  switch(state.tempDirection) {
-    case INACTIVE: return "Idle";
-    case INCREASE: return "Heat";
-    case DECREASE: return "Cool";
-  }
-  return "";
+  if (state.heatingActive)
+    return "Heat";
+  else if (state.coolingActive)
+    return "Cool";
+  else return "Idle";
 }
 
 String getHumidityActivityString() {
-  switch(state.humidityDirection) {
-    case INACTIVE: return "Idle";
-    case INCREASE: return "Humidify";
-    case DECREASE: return "Dehumidify";
-  }
-  return "";
+  if (state.humidActive)
+    return "Humidify";
+  else if (state.dehumidActive)
+    return "Dehumidify";
+  else return "Idle";
 }
 
 void initializeMinMax(float currentTemp, float currentHumidity) {
