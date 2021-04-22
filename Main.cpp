@@ -31,10 +31,34 @@ char buffer2[50];
 
 // This code assumes readSensors is called frequently to update currentTemp/currentHumidity
 // All other tasks use those values for functionality.
+float tempAlpha = 0.4;
+float humidityAlpha = 0.07; // has more jitter, so lower alpha
+int readErrorCount = 0;
 void readSensors() {
-  state.currentTemp = dht.convertCtoF(dht.readTemperature());
-  state.currentHumidity = dht.readHumidity();
-  validateMinMaxTemp();
+  float currentTemp = dht.convertCtoF(dht.readTemperature());
+  float currentHumidity = dht.readHumidity();
+
+  if (isnan(state.currentHumidity) || isnan(state.currentTemp)) {
+    Serial.println("Failed to read from DHT sensor.");
+    ++readErrorCount;
+    if (readErrorCount > 10) {
+      NVIC_SystemReset();
+    }
+  } else {
+    if(state.currentHumidity == 0) {
+      state.currentHumidity = currentHumidity;
+    } else {
+      state.currentHumidity = (humidityAlpha * currentHumidity) + (1.0 - humidityAlpha) * state.currentHumidity;
+    }
+
+    if (state.currentTemp == 0) {
+      state.currentTemp = currentTemp;
+    } else {
+      state.currentTemp = (tempAlpha * currentTemp) + (1.0 - tempAlpha) * state.currentTemp;
+    }
+    readErrorCount = 0;
+    validateMinMaxTemp();
+  }
 }
 
 String getTempActivityString() {
