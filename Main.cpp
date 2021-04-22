@@ -102,10 +102,6 @@ void validateMinMaxTemp() {
     initializeMinMax(state.currentTemp, state.currentHumidity);
     minMaxInitialized = true;
   }
-  if (isnan(state.currentHumidity) || isnan(state.currentTemp)) {
-    Serial.println("Failed to read from DHT sensor. Setting to 50/50.");
-    state.currentTemp = state.currentHumidity = 50;
-  }
 }
 
 void appModeChanged() {
@@ -257,6 +253,7 @@ bool toggle = false;
 void updateRelays() {
   if (state.currentAppMode != MODE_IDLE || state.currentTemp <= 0) { return; }
 
+  // Temperature checks
   int allowedMinTemp = state.targetMinTemp;
   if (state.tempDirection == DECREASE)
     allowedMinTemp -= state.tempFloat;
@@ -264,20 +261,29 @@ void updateRelays() {
   if (state.tempDirection == INCREASE)
     allowedMaxTemp += state.tempFloat;
 
+  if (state.currentTemp < allowedMinTemp) {
+    activateFridge(POWER_OFF);
+  } else if (state.currentTemp > allowedMaxTemp)  {
+    activateFridge(POWER_ON);
+    state.tempDirection = DECREASE;
+  }
+
   if (state.currentTemp < allowedMinTemp){
     activateHeat(POWER_ON);
-    activateFridge(POWER_OFF);
     state.tempDirection = INCREASE;
   } else if (state.currentTemp > allowedMaxTemp)  {
     activateHeat(POWER_OFF);
-    activateFridge(POWER_ON);
-    state.tempDirection = DECREASE;
-  } else {
-    activateHeat(POWER_OFF);
-    activateFridge(POWER_OFF);
-    state.tempDirection = INACTIVE;
   }
 
+  // Decide when to turn temperature control off
+  if (state.tempDirection == DECREASE && state.currentTemp < state.targetMinTemp) {
+    activateFridge(POWER_OFF);
+  }
+  else if (state.tempDirection == INCREASE && state.currentTemp > state.targetMaxTemp) {
+    activateHeat(POWER_OFF);
+  }
+
+  // Humidity checks
   int allowedMinHumidity = state.targetMinHumidity;
   if (state.humidityDirection == DECREASE)
     allowedMinHumidity -= state.humidityFloat;
@@ -285,18 +291,26 @@ void updateRelays() {
   if (state.humidityDirection == INCREASE)
     allowedMaxHumidity += state.humidityFloat;
 
+  if (state.currentHumidity < allowedMinHumidity) {
+    activateDehumidifier(POWER_OFF);
+  } else if (state.currentHumidity > allowedMaxHumidity)  {
+    activateDehumidifier(POWER_ON);
+    state.humidityDirection = DECREASE;
+  }
+
   if (state.currentHumidity < allowedMinHumidity){
     activateHumidifier(POWER_ON);
-    activateDehumidifier(POWER_OFF);
     state.humidityDirection = INCREASE;
   } else if (state.currentHumidity > allowedMaxHumidity)  {
     activateHumidifier(POWER_OFF);
-    activateDehumidifier(POWER_ON);
-    state.humidityDirection = DECREASE;
-  } else {
-    activateHumidifier(POWER_OFF);
+  }
+
+  // Decide when to turn humidity control off
+  if (state.humidityDirection == DECREASE && state.currentHumidity < state.targetMinHumidity) {
     activateDehumidifier(POWER_OFF);
-    state.humidityDirection = INACTIVE;
+  }
+  else if (state.humidityDirection == INCREASE && state.currentHumidity > state.targetMaxHumidity) {
+    activateHumidifier(POWER_OFF);
   }
 }
 
