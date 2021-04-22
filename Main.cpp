@@ -232,9 +232,6 @@ void onInputLongPress() {
     state.editingCurrentField = false;
     nextAppMode(MODE_IDLE);
   }
-
-  fanOn = !fanOn;
-  analogWrite(FAN_PIN_1, fanOn ? 255: 0);
 }
 
 void onInputChange(int direction) {
