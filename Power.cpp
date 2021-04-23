@@ -13,8 +13,9 @@ void setupPower() {
 	digitalWrite(RELAY_PIN_HEAT, POWER_OFF);
 }
 
-void activateHumidifier(int active) {
-	state.humidActive = active == POWER_ON;
+void activateHumidifier(int active, bool updateState) {
+	if (updateState)
+		state.humidActive = active == POWER_ON;
 	digitalWrite(RELAY_PIN_HUMIDIFIER, active);
 }
 

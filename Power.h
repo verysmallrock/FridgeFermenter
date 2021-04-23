@@ -12,7 +12,7 @@
 #define POWER_OFF HIGH
 
 void setupPower();
-void activateHumidifier(int active);
+void activateHumidifier(int active, bool updateState = true);
 void activateDehumidifier(int active);
 void activateFridge(int active);
 void activateHeat(int active);
