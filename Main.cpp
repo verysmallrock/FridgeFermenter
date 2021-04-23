@@ -111,6 +111,8 @@ void appModeChanged() {
     activateFridge(POWER_OFF);
     activateHumidifier(POWER_OFF);
     activateDehumidifier(POWER_OFF);
+    state.tempDirection = INACTIVE;
+    state.humidityDirection = INACTIVE;
   }
   updateDisplay(true, false, false);
 
