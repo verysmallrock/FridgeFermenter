@@ -82,9 +82,10 @@ void initializeMinMax(float currentTemp, float currentHumidity) {
   state.minTemp = state.targetMinTemp - floatRange;
   state.maxTemp = state.targetMaxTemp + floatRange;
 
-  int humidityFloat = int(state.humidityFloat * 1.8);
-  state.minHumidity = state.targetMinHumidity - floatRange;
-  state.maxHumidity = state.targetMaxHumidity + floatRange;
+  int dehumidityFloatRange = int(state.dehumidityFloat * 1.8);
+  int humidityFloatRange = int(state.humidityFloat * 1.8);
+  state.minHumidity = state.targetMinHumidity - dehumidityFloatRange;
+  state.maxHumidity = state.targetMaxHumidity + humidityFloatRange;
 
   if (state.currentAppMode == MODE_IDLE) {
     sprintf(buffer1, "%d F", state.minTemp);
@@ -191,9 +192,14 @@ void drawDisplay(bool drawNextPoint) {
 
     left[0] = "  - Float";
     leftColors[0] = GRAY_600;
-    sprintf(buffer1, "%d %%", state.humidityFloat); right[0] = buffer1;
-    rightColors[0] = _config1FieldColor(humFloat);
-    printTextFancy(4, left, leftColors, 1, right, rightColors, 1);
+
+    sprintf(buffer1, "%d %%", state.dehumidityFloat); right[0] = buffer1;
+    sprintf(buffer1, ", "); right[1] = buffer1;
+    sprintf(buffer1, "%d %%", state.humidityFloat); right[2] = buffer1;
+    rightColors[0] = _config1FieldColor(dehumFloat);
+    rightColors[1] = GRAY_600;
+    rightColors[2] = _config1FieldColor(humFloat);
+    printTextFancy(4, left, leftColors, 1, right, rightColors, 3);
 
     left[0] = "Fan";
     leftColors[0] = GRAY_600;
@@ -252,8 +258,8 @@ bool toggle = false;
 
 // Humidifier really pumps the humidity, so use an on/off schedule to reduce the
 // amount it goes over our upper bound
-#define HUMIDITY_PERIOD 7000 // on for x seconds
-#define HUMIDITY_BREAK 20000 // off for x seconds
+#define HUMIDITY_PERIOD 15000 // on for x seconds
+#define HUMIDITY_BREAK 15000 // off for x seconds
 
 void updateRelays() {
   if (state.currentAppMode != MODE_IDLE || state.currentTemp <= 0) { return; }
@@ -291,7 +297,7 @@ void updateRelays() {
   // Humidity checks
   int allowedMinHumidity = state.targetMinHumidity;
   if (state.humidityDirection == DECREASE)
-    allowedMinHumidity -= state.humidityFloat;
+    allowedMinHumidity -= state.dehumidityFloat;
   int allowedMaxHumidity = state.targetMaxHumidity;
   if (state.humidityDirection == INCREASE)
     allowedMaxHumidity += state.humidityFloat;

@@ -44,7 +44,7 @@ void nextAppMode(int forceMode) {
   appModeChanged();
 }
 
-int c1editFields[] = {tempLow, tempHigh, tempFloat, humLow, humHigh, humFloat, fanDuration, fanPeriod, Exit, lastField};
+int c1editFields[] = {tempLow, tempHigh, tempFloat, humLow, humHigh, dehumFloat, humFloat, fanDuration, fanPeriod, Exit, lastField};
 void nextConfig1EditField(int direction) {
   int field = int(state.config1Field);
   if (direction > 0) {
@@ -67,6 +67,7 @@ int * getCurrentConfig1Field() {
     case tempFloat: return &state.tempFloat;
     case humLow: return &state.targetMinHumidity;
     case humHigh: return &state.targetMaxHumidity;
+    case dehumFloat: return &state.dehumidityFloat;
     case humFloat: return &state.humidityFloat;
     case fanDuration: return &state.fanDurationSeconds;
     case fanPeriod: return &state.fanIntervalMinutes;
@@ -98,6 +99,7 @@ int validateCurrentConfig1Field(int currentField) {
     case tempFloat: return clamp(currentField, MIN_FLOAT, MAX_FLOAT);
     case humLow: return clamp(currentField, MIN_HUMIDITY, MAX_HUMIDITY - MIN_HUMIDITY_RANGE);
     case humHigh: return clamp(currentField, MIN_HUMIDITY + MIN_HUMIDITY_RANGE, MAX_HUMIDITY);
+    case dehumFloat: return clamp(currentField, MIN_FLOAT, MAX_FLOAT);
     case humFloat: return clamp(currentField, MIN_FLOAT, MAX_FLOAT);
     case fanDuration: return clamp(currentField, MIN_FAN_DURATION, MAX_FAN_DURATION);
     case fanPeriod: return clamp(currentField, MIN_FAN_PERIOD, MAX_FAN_PERIOD);
@@ -112,6 +114,7 @@ void correctRelatedConfig1Field(int currentField) {
     case tempFloat: return;
     case humLow: state.targetMaxHumidity = clamp(state.targetMaxHumidity, currentField + MIN_HUMIDITY_RANGE, MAX_HUMIDITY); break;
     case humHigh: state.targetMinHumidity = clamp(state.targetMinHumidity, MIN_HUMIDITY, currentField - MIN_HUMIDITY_RANGE);
+    case dehumFloat: return;
     case humFloat: return;
     case fanDuration: return;
     case fanPeriod: return;
