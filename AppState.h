@@ -9,7 +9,8 @@
 
 #define MODE_IDLE 0
 #define MODE_CONFIG_1 1
-#define MODE_MAX 1
+#define MODE_CONFIG_2 2
+#define MODE_MAX 2
 
 enum Config1CurrentEditField {
 	C1TempLow = 0, C1TempHigh = 1, C1TempFloat,
@@ -17,6 +18,12 @@ enum Config1CurrentEditField {
 	C1FanDuration, C1FanPeriod,
 	C1Next, C1Exit,
 	C1LastField
+};
+
+enum Config2CurrentEditField {
+	C2HumWhenCooling = 0,
+	C2Exit,
+	C2LastField
 };
 
 struct AppState {
@@ -27,6 +34,7 @@ struct AppState {
 	unsigned long maxIdleTime;
 	int currentAppMode;
 	Config1CurrentEditField config1Field;
+	Config2CurrentEditField config2Field;
 	boolean editingCurrentField;
 
 	/*  Sensor State */
@@ -61,6 +69,9 @@ struct AppState {
 
 	bool fanActive;
 	unsigned long lastFanUpdate;
+
+	// Config 1
+	int humidifyWhenCooling;
 };
 #define DEFAULT_STATE { \
 	true, /* valid;*/ \
@@ -68,6 +79,7 @@ struct AppState {
 	15000, /* unsigned long maxIdleTime; */ \
 	MODE_IDLE, /* currentAppMode */ \
 	C1TempLow, /* Config1CurrentEditField config1Field; */ \
+	C2HumWhenCooling, /*Config2CurrentEditField config2Field; */ \
 	false, /* boolean editingCurrentField; */ \
 	\
 	0, /* float currentTemp; */ \
@@ -76,15 +88,15 @@ struct AppState {
 	47, /* int minTemp;  Graphed min temp */ \
 	63, /* int maxTemp;  Graphed max temp */ \
 	53, /* int targetMinTemp; User-chosen */ \
-	57, /* int targetMaxTemp; User-chosen */ \
-	4, /* int tempFloat; User-chosen */ \
+	55, /* int targetMaxTemp; User-chosen */ \
+	3, /* int tempFloat; User-chosen */ \
 	\
 	73, /* int minHumidity; Graphed min */ \
 	88, /* int maxHumidity;  Graphed max */ \
-	79, /* int targetMinHumidity; User-chosen */ \
-	82, /* int targetMaxHumidity; User-chosen */ \
+	75, /* int targetMinHumidity; User-chosen */ \
+	80, /* int targetMaxHumidity; User-chosen */ \
 	2, /* int dehumidityFloat; */ \
-	7, /* int humidityFloat; User-chosen */ \
+	5, /* int humidityFloat; User-chosen */ \
 	\
 	30, /* int fanDurationSeconds; User-chosen */ \
 	180, /* int fanIntervalMinutes; User-chosen */ \
@@ -98,6 +110,8 @@ struct AppState {
 	false, /* bool dehumidActive; */ \
 	false, /* bool fanActive; */ \
 	0, /*unsigned long lastFanUpdate; */ \
+	\
+	1, /* int humidifyWhenCooling; */ \
 }
 
 extern AppState state;
@@ -105,9 +119,9 @@ extern AppState state;
 void loadAppState();
 void saveAppState();
 
-void nextAppMode(int forceMode = NULL);
-void nextConfig1EditField(int direction);
-void changeCurrentConfig1Field(int delta);
+void nextAppMode(int forceMode = -1);
+void nextConfigEditField(int direction);
+void changeCurrentConfigField(int delta);
 void exitEditingIfIdle();
 
 #endif

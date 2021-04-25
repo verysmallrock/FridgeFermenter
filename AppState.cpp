@@ -30,7 +30,7 @@ void saveAppState() {
 
 void nextAppMode(int forceMode) {
   int lastAppMode = state.currentAppMode;
-  if (forceMode != NULL) {
+  if (forceMode != -1) {
     state.currentAppMode = forceMode;
   } else {
     ++state.currentAppMode;
@@ -44,24 +44,43 @@ void nextAppMode(int forceMode) {
   appModeChanged();
 }
 
-int c1editFields[] = {C1TempLow, C1TempHigh, C1TempFloat, C1HumLow, C1HumHigh, C1DehumFloat, C1HumFloat, C1FanDuration, C1FanPeriod, C1Next, C1Exit, C1LastField};
-void nextConfig1EditField(int direction) {
-  int field = int(state.config1Field);
+int c1editFields[] = { C1TempLow, C1TempHigh, C1TempFloat, C1HumLow, C1HumHigh, C1DehumFloat, C1HumFloat, C1FanDuration, C1FanPeriod, C1Next, C1Exit, C1LastField };
+int c2editFields[] = { C2HumWhenCooling, C2Exit, C2LastField };
+
+void nextConfigEditField(int direction) {
+  int field;
+  int firstField, lastField;
+
+  if (state.currentAppMode == MODE_CONFIG_1) {
+    field = int(state.config1Field);
+    firstField = C1TempLow;
+    lastField = C1LastField;
+  } else if (state.currentAppMode == MODE_CONFIG_2) {
+    field = int(state.config2Field);
+    firstField = C2HumWhenCooling;
+    lastField = C2LastField;
+  }
+
   if (direction > 0) {
     ++field;
-    if (field == int(C1LastField))
-      field = C1TempLow;
+    if (field == int(lastField))
+      field = firstField;
   }
   else {
     --field;
     if (field < 0)
-      field = Config1CurrentEditField(C1LastField - 1);
+      field = int(lastField - 1);
   }
-  state.config1Field = Config1CurrentEditField(c1editFields[field]);
+
+  if (state.currentAppMode == MODE_CONFIG_1) {
+    state.config1Field = Config1CurrentEditField(c1editFields[field]);
+  } else if (state.currentAppMode == MODE_CONFIG_2) {
+    state.config2Field = Config2CurrentEditField(c2editFields[field]);
+  }
 }
 
-int * getCurrentConfig1Field() {
-  switch(state.config1Field) {
+int * getCurrentConfigField(Config1CurrentEditField field) {
+  switch(field) {
     case C1TempLow: return &state.targetMinTemp;
     case C1TempHigh: return &state.targetMaxTemp;
     case C1TempFloat: return &state.tempFloat;
@@ -74,10 +93,16 @@ int * getCurrentConfig1Field() {
   }
 }
 
+int * getCurrentConfigField(Config2CurrentEditField field) {
+  switch(field) {
+    case C2HumWhenCooling: return &state.humidifyWhenCooling;
+  }
+}
+
 
 #define MIN_TEMP 36
 #define MAX_TEMP 120
-#define MIN_TEMP_RANGE 3
+#define MIN_TEMP_RANGE 1
 #define MIN_HUMIDITY 15
 #define MAX_HUMIDITY 99
 #define MIN_HUMIDITY_RANGE 3
@@ -92,8 +117,8 @@ int clamp(int value, int minValue, int maxValue) {
   return min(max(value, minValue), maxValue);
 }
 
-int validateCurrentConfig1Field(int currentField) {
-  switch(state.config1Field) {
+int validateConfigField(Config1CurrentEditField field, int currentField) {
+  switch(field) {
     case C1TempLow: return clamp(currentField, MIN_TEMP, MAX_TEMP - MIN_TEMP_RANGE);
     case C1TempHigh: return clamp(currentField, MIN_TEMP + MIN_TEMP_RANGE, MAX_TEMP);
     case C1TempFloat: return clamp(currentField, MIN_FLOAT, MAX_FLOAT);
@@ -106,9 +131,15 @@ int validateCurrentConfig1Field(int currentField) {
   }
 }
 
-void correctRelatedConfig1Field(int currentField) {
+int validateConfigField(Config2CurrentEditField field, int currentField) {
+  switch(field) {
+    case C2HumWhenCooling: return clamp(currentField, 0, 1);
+  }
+}
+
+void correctRelatedConfigField(Config1CurrentEditField field, int currentField) {
   // assume currentField is VALID
-  switch(state.config1Field) {
+  switch(field) {
     case C1TempLow: state.targetMaxTemp = clamp(state.targetMaxTemp, currentField + MIN_TEMP_RANGE, MAX_TEMP); break;
     case C1TempHigh: state.targetMinTemp = clamp(state.targetMinTemp, MIN_TEMP, currentField - MIN_TEMP_RANGE); break;
     case C1TempFloat: return;
@@ -121,13 +152,29 @@ void correctRelatedConfig1Field(int currentField) {
   }
 }
 
-void changeCurrentConfig1Field(int delta) {
-  if (state.config1Field == C1Next || state.config1Field == C1Exit)
-    return;
-  int * fieldToEdit = getCurrentConfig1Field();
-  *fieldToEdit = validateCurrentConfig1Field(*fieldToEdit + delta);
-  correctRelatedConfig1Field(*fieldToEdit);
-  appStateChanged = true;
+void correctRelatedConfigField(Config2CurrentEditField field, int currentField) {
+  // assume currentField is VALID
+  switch(field) {
+    case C2HumWhenCooling: return; break;
+  }
+}
+
+void changeCurrentConfigField(int delta) {
+  if (state.currentAppMode == MODE_CONFIG_1) {
+    if (state.config1Field == C1Next || state.config1Field == C1Exit)
+      return;
+    int * fieldToEdit = getCurrentConfigField(state.config1Field);
+    *fieldToEdit = validateConfigField(state.config1Field, *fieldToEdit + delta);
+    correctRelatedConfigField(state.config1Field, *fieldToEdit);
+    appStateChanged = true;
+  } else if (state.currentAppMode == MODE_CONFIG_2) {
+    if (state.config2Field == C2Exit)
+      return;
+    int * fieldToEdit = getCurrentConfigField(state.config2Field);
+    *fieldToEdit = validateConfigField(state.config2Field, *fieldToEdit + delta);
+    correctRelatedConfigField(state.config2Field, *fieldToEdit);
+    appStateChanged = true;
+  }
 }
 
 void exitEditingIfIdle() {

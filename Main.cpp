@@ -106,7 +106,7 @@ void validateMinMaxTemp() {
 }
 
 void appModeChanged() {
-  if (state.currentAppMode == MODE_CONFIG_1) {
+  if (state.currentAppMode == MODE_CONFIG_1 || state.currentAppMode == MODE_CONFIG_2) {
     // turn things off while editing
     activateHeat(POWER_OFF);
     activateFridge(POWER_OFF);
@@ -122,8 +122,8 @@ void appModeChanged() {
   drawDisplay(true);
 }
 
-uint16_t _config1FieldColor(Config1CurrentEditField field) {
-  if (int(state.config1Field) == int(field)) {
+uint16_t _getFieldColor(bool active) {
+  if (active) {
     if (state.editingCurrentField) {
       int blinkPeriod = 900;
       if ((millis() % blinkPeriod) < blinkPeriod / 3)
@@ -136,6 +136,14 @@ uint16_t _config1FieldColor(Config1CurrentEditField field) {
   } else {
     return GRAY_600;
   }
+}
+
+uint16_t _config1FieldColor(Config1CurrentEditField field) {
+  return _getFieldColor(int(state.config1Field) == int(field));
+}
+
+uint16_t _config2FieldColor(Config2CurrentEditField field) {
+  return _getFieldColor(int(state.config2Field) == int(field));
 }
 
 void drawDisplay(bool drawNextPoint) {
@@ -216,6 +224,22 @@ void drawDisplay(bool drawNextPoint) {
     right[0] = "Exit";
     rightColors[0] = _config1FieldColor(C1Exit);
     printTextFancy(6, left, leftColors, 1, right, rightColors, 1);
+  } else if (state.currentAppMode == MODE_CONFIG_2) {
+    updateDisplay(false, false, true);
+
+    printTitle("Configuration");
+
+    left[0] = "Hume When Cool";
+    leftColors[0] = GRAY_600;
+    sprintf(buffer1, "%s", state.humidifyWhenCooling == 1 ? "Yes" : "No"); right[0] = buffer1;
+    rightColors[0] = _config2FieldColor(C2HumWhenCooling);
+    printTextFancy(1, left, leftColors, 1, right, rightColors, 1);
+
+    left[0] = "";
+    leftColors[0] = GRAY_600;
+    right[0] = "Exit";
+    rightColors[0] = _config2FieldColor(C2Exit);
+    printTextFancy(6, left, leftColors, 1, right, rightColors, 1);
   }
 }
 
@@ -223,6 +247,14 @@ void onInputPress() {
   Serial.println("click");
   if (state.currentAppMode == MODE_CONFIG_1) {
     if (state.config1Field == C1Exit) {
+      nextAppMode(MODE_IDLE);
+    } else if (state.config1Field == C1Next) {
+      nextAppMode(MODE_CONFIG_2);
+    } else {
+      state.editingCurrentField = !state.editingCurrentField;
+    }
+  } else if (state.currentAppMode == MODE_CONFIG_2) {
+    if (state.config2Field == C2Exit) {
       nextAppMode(MODE_IDLE);
     } else {
       state.editingCurrentField = !state.editingCurrentField;
@@ -236,7 +268,7 @@ void onInputPress() {
 
 bool fanOn = false;
 void onInputLongPress() {
-  if (state.currentAppMode == MODE_CONFIG_1) {
+  if (state.currentAppMode == MODE_CONFIG_1 || state.currentAppMode == MODE_CONFIG_2) {
     state.editingCurrentField = false;
     nextAppMode(MODE_IDLE);
   }
@@ -245,12 +277,10 @@ void onInputLongPress() {
 void onInputChange(int direction) {
   Serial.println("Encoder " + String(direction));
   state.lastInputTime = millis();
-  if (state.currentAppMode == MODE_CONFIG_1) {
-    if (state.editingCurrentField) {
-      changeCurrentConfig1Field(direction);
-    } else {
-      nextConfig1EditField(direction);
-    }
+  if (state.editingCurrentField) {
+    changeCurrentConfigField(direction);
+  } else {
+    nextConfigEditField(direction);
   }
 }
 
@@ -293,7 +323,7 @@ void updateRelays() {
   }
 
   // Humidity checks
-  if (state.coolingActive) {
+  if (state.humidifyWhenCooling == 1 && state.coolingActive) {
     // humidify if cooling
       activateHumidifier(POWER_ON);
   } else {

@@ -22,7 +22,7 @@ void readAndRedraw() {
     drawDisplay(drawNextPoint);
     if (drawNextPoint)
       readTimer = now;
-  } else if (state.currentAppMode == MODE_CONFIG_1 && now - readTimer > ConfigDisplayUpdateRate) {
+  } else if ((state.currentAppMode == MODE_CONFIG_1 || state.currentAppMode == MODE_CONFIG_2) && now - readTimer > ConfigDisplayUpdateRate) {
     drawDisplay();
     readTimer = now;
   }
