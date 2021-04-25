@@ -45,7 +45,7 @@ void nextAppMode(int forceMode) {
 }
 
 int c1editFields[] = { C1TempLow, C1TempHigh, C1TempFloat, C1HumLow, C1HumHigh, C1DehumFloat, C1HumFloat, C1FanDuration, C1FanPeriod, C1Next, C1Exit, C1LastField };
-int c2editFields[] = { C2HumWhenCooling, C2Exit, C2LastField };
+int c2editFields[] = { C2HumWhenCooling, C2HumPeriod, C2HumBreak, C2Exit, C2LastField };
 
 void nextConfigEditField(int direction) {
   int field;
@@ -96,10 +96,12 @@ int * getCurrentConfigField(Config1CurrentEditField field) {
 int * getCurrentConfigField(Config2CurrentEditField field) {
   switch(field) {
     case C2HumWhenCooling: return &state.humidifyWhenCooling;
+    case C2HumPeriod: return &state.humidityPeriod;
+    case C2HumBreak: return &state.humidityBreak;
   }
 }
 
-
+// Config 1
 #define MIN_TEMP 36
 #define MAX_TEMP 120
 #define MIN_TEMP_RANGE 1
@@ -112,6 +114,12 @@ int * getCurrentConfigField(Config2CurrentEditField field) {
 #define MAX_FAN_DURATION 300
 #define MIN_FAN_PERIOD 1 // minutes
 #define MAX_FAN_PERIOD 999
+
+// Config 2
+#define MIN_HUME_PERIOD 0
+#define MAX_HUME_PERIOD 120
+#define MIN_HUME_BREAK 0
+#define MAX_HUME_BREAK 120
 
 int clamp(int value, int minValue, int maxValue) {
   return min(max(value, minValue), maxValue);
@@ -134,6 +142,8 @@ int validateConfigField(Config1CurrentEditField field, int currentField) {
 int validateConfigField(Config2CurrentEditField field, int currentField) {
   switch(field) {
     case C2HumWhenCooling: return clamp(currentField, 0, 1);
+    case C2HumPeriod: return clamp(currentField, MIN_HUME_PERIOD, MAX_HUME_PERIOD);
+    case C2HumBreak: return clamp(currentField, MIN_HUME_BREAK, MAX_HUME_BREAK);
   }
 }
 
@@ -156,6 +166,8 @@ void correctRelatedConfigField(Config2CurrentEditField field, int currentField) 
   // assume currentField is VALID
   switch(field) {
     case C2HumWhenCooling: return; break;
+    case C2HumPeriod: return; break;
+    case C2HumBreak: return; break;
   }
 }
 

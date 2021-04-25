@@ -229,11 +229,21 @@ void drawDisplay(bool drawNextPoint) {
 
     printTitle("Configuration");
 
-    left[0] = "Hume When Cool";
+    left[0] = "Hume if Cool"; // run humidifier 100% if cooling
     leftColors[0] = GRAY_600;
     sprintf(buffer1, "%s", state.humidifyWhenCooling == 1 ? "Yes" : "No"); right[0] = buffer1;
     rightColors[0] = _config2FieldColor(C2HumWhenCooling);
     printTextFancy(1, left, leftColors, 1, right, rightColors, 1);
+
+    left[0] = "Hume Cycle";
+    leftColors[0] = GRAY_600;
+    sprintf(buffer1, "%ds", state.humidityPeriod); right[0] = buffer1;
+    sprintf(buffer1, " / "); right[1] = buffer1;
+    sprintf(buffer1, "%ds", state.humidityBreak); right[2] = buffer1;
+    rightColors[0] = _config2FieldColor(C2HumPeriod);
+    rightColors[1] = GRAY_600;
+    rightColors[2] = _config2FieldColor(C2HumBreak);
+    printTextFancy(2, left, leftColors, 1, right, rightColors, 3);
 
     left[0] = "";
     leftColors[0] = GRAY_600;

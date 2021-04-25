@@ -22,8 +22,8 @@ enum Config1CurrentEditField {
 
 enum Config2CurrentEditField {
 	C2HumWhenCooling = 0,
-	C2Exit,
-	C2LastField
+	C2HumPeriod, C2HumBreak,
+	C2Exit, C2LastField
 };
 
 struct AppState {
@@ -99,7 +99,7 @@ struct AppState {
 	88, /* int maxHumidity;  Graphed max */ \
 	75, /* int targetMinHumidity; User-chosen */ \
 	80, /* int targetMaxHumidity; User-chosen */ \
-	2, /* int dehumidityFloat; */ \
+	5, /* int dehumidityFloat; */ \
 	5, /* int humidityFloat; User-chosen */ \
 	\
 	30, /* int fanDurationSeconds; User-chosen */ \
