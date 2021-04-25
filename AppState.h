@@ -70,8 +70,12 @@ struct AppState {
 	bool fanActive;
 	unsigned long lastFanUpdate;
 
-	// Config 1
+	// Config 2
 	int humidifyWhenCooling;
+	// Humidifier really pumps the humidity, so use an on/off schedule to reduce the
+	// amount it goes over our upper bound
+	int humidityPeriod; // seconds
+	int humidityBreak; // seconds
 };
 #define DEFAULT_STATE { \
 	true, /* valid;*/ \
@@ -112,6 +116,8 @@ struct AppState {
 	0, /*unsigned long lastFanUpdate; */ \
 	\
 	1, /* int humidifyWhenCooling; */ \
+	15, /*int humidityPeriod; */ \
+	15,  /* int humidityBreak; */ \
 }
 
 extern AppState state;

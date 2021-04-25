@@ -286,11 +286,6 @@ void onInputChange(int direction) {
 
 bool toggle = false;
 
-// Humidifier really pumps the humidity, so use an on/off schedule to reduce the
-// amount it goes over our upper bound
-#define HUMIDITY_PERIOD 15000 // on for x seconds
-#define HUMIDITY_BREAK 15000 // off for x seconds
-
 void updateRelays() {
   if (state.currentAppMode != MODE_IDLE || state.currentTemp <= 0) { return; }
 
@@ -340,8 +335,8 @@ void updateRelays() {
       activateDehumidifier(POWER_ON);
     }
 
-    if (state.currentHumidity < allowedMinHumidity){
-      if(millis() % (HUMIDITY_PERIOD + HUMIDITY_BREAK) < HUMIDITY_PERIOD)
+    if (state.currentHumidity < allowedMinHumidity) {
+      if(millis() % ((state.humidityPeriod + state.humidityBreak) * 1000) < (state.humidityPeriod * 1000))
         activateHumidifier(POWER_ON);
       else
         activateHumidifier(POWER_OFF, false);
