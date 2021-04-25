@@ -16,20 +16,28 @@ void setupPower() {
 void activateHumidifier(int active, bool updateState) {
 	if (updateState)
 		state.humidActive = active == POWER_ON;
+	if (active == POWER_ON)
+		state.humidityDirection = INCREASE;
 	digitalWrite(RELAY_PIN_HUMIDIFIER, active);
 }
 
 void activateDehumidifier(int active) {
 	state.dehumidActive = active == POWER_ON;
+	if (active == POWER_ON)
+		state.humidityDirection = DECREASE;
 	digitalWrite(RELAY_PIN_DEHUMIDIFIER, active);
 }
 
 void activateFridge(int active) {
 	state.coolingActive = active == POWER_ON;
+	if (active == POWER_ON)
+		state.tempDirection = DECREASE;
 	digitalWrite(RELAY_PIN_FRIDGE, active);
 }
 
 void activateHeat(int active) {
 	state.heatingActive = active == POWER_ON;
+	if (active == POWER_ON)
+		state.tempDirection = INCREASE;
 	digitalWrite(RELAY_PIN_HEAT, active);
 }
