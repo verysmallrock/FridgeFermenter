@@ -139,6 +139,11 @@ uint16_t _config1FieldColor(Config1CurrentEditField field) {
 }
 
 void drawDisplay(bool drawNextPoint) {
+  String left[5];
+  uint16_t leftColors[5];
+  String right[5];
+  uint16_t rightColors[5];
+
   if (state.currentAppMode == MODE_IDLE) {
     updateDisplay(false, false, true);
     setGraphBottomRightStr(2, getTempActivityString());
@@ -159,25 +164,20 @@ void drawDisplay(bool drawNextPoint) {
 
     printTitle("Configuration");
 
-    String left[5];
-    uint16_t leftColors[5];
-    String right[5];
-    uint16_t rightColors[5];
-
     left[0] = "Temp";
     leftColors[0] = GRAY_600;
     sprintf(buffer1, "%d", state.targetMinTemp); right[0] = buffer1;
     sprintf(buffer1, " - "); right[1] = buffer1;
     sprintf(buffer1, "%d F", state.targetMaxTemp); right[2] = buffer1;
-    rightColors[0] = _config1FieldColor(tempLow);
+    rightColors[0] = _config1FieldColor(C1TempLow);
     rightColors[1] = GRAY_600;
-    rightColors[2] = _config1FieldColor(tempHigh);
+    rightColors[2] = _config1FieldColor(C1TempHigh);
     printTextFancy(1, left, leftColors, 1, right, rightColors, 3);
 
     left[0] = "  - Float";
     leftColors[0] = GRAY_600;
     sprintf(buffer1, "%d F", state.tempFloat); right[0] = buffer1;
-    rightColors[0] = _config1FieldColor(tempFloat);
+    rightColors[0] = _config1FieldColor(C1TempFloat);
     printTextFancy(2, left, leftColors, 1, right, rightColors, 1);
 
     left[0] = "Humidity";
@@ -185,9 +185,9 @@ void drawDisplay(bool drawNextPoint) {
     sprintf(buffer1, "%d", state.targetMinHumidity); right[0] = buffer1;
     sprintf(buffer1, " - "); right[1] = buffer1;
     sprintf(buffer1, "%d %%", state.targetMaxHumidity); right[2] = buffer1;
-    rightColors[0] = _config1FieldColor(humLow);
+    rightColors[0] = _config1FieldColor(C1HumLow);
     rightColors[1] = GRAY_600;
-    rightColors[2] = _config1FieldColor(humHigh);
+    rightColors[2] = _config1FieldColor(C1HumHigh);
     printTextFancy(3, left, leftColors, 1, right, rightColors, 3);
 
     left[0] = "  - Float";
@@ -196,9 +196,9 @@ void drawDisplay(bool drawNextPoint) {
     sprintf(buffer1, "%d %%", state.dehumidityFloat); right[0] = buffer1;
     sprintf(buffer1, ", "); right[1] = buffer1;
     sprintf(buffer1, "%d %%", state.humidityFloat); right[2] = buffer1;
-    rightColors[0] = _config1FieldColor(dehumFloat);
+    rightColors[0] = _config1FieldColor(C1DehumFloat);
     rightColors[1] = GRAY_600;
-    rightColors[2] = _config1FieldColor(humFloat);
+    rightColors[2] = _config1FieldColor(C1HumFloat);
     printTextFancy(4, left, leftColors, 1, right, rightColors, 3);
 
     left[0] = "Fan";
@@ -206,15 +206,15 @@ void drawDisplay(bool drawNextPoint) {
     sprintf(buffer1, "%ds", state.fanDurationSeconds); right[0] = buffer1;
     sprintf(buffer1, " / "); right[1] = buffer1;
     sprintf(buffer1, "%dm", state.fanIntervalMinutes); right[2] = buffer1;
-    rightColors[0] = _config1FieldColor(fanDuration);
+    rightColors[0] = _config1FieldColor(C1FanDuration);
     rightColors[1] = GRAY_600;
-    rightColors[2] = _config1FieldColor(fanPeriod);
+    rightColors[2] = _config1FieldColor(C1FanPeriod);
     printTextFancy(5, left, leftColors, 1, right, rightColors, 3);
 
-    left[0] = "";
-    leftColors[0] = GRAY_600;
+    left[0] = "Next";
+    leftColors[0] = _config1FieldColor(C1Next);
     right[0] = "Exit";
-    rightColors[0] = _config1FieldColor(Exit);
+    rightColors[0] = _config1FieldColor(C1Exit);
     printTextFancy(6, left, leftColors, 1, right, rightColors, 1);
   }
 }
@@ -222,7 +222,7 @@ void drawDisplay(bool drawNextPoint) {
 void onInputPress() {
   Serial.println("click");
   if (state.currentAppMode == MODE_CONFIG_1) {
-    if (state.config1Field == Exit) {
+    if (state.config1Field == C1Exit) {
       nextAppMode(MODE_IDLE);
     } else {
       state.editingCurrentField = !state.editingCurrentField;

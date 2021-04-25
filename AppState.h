@@ -12,11 +12,11 @@
 #define MODE_MAX 1
 
 enum Config1CurrentEditField {
-	tempLow = 0, tempHigh = 1, tempFloat,
-	humLow, humHigh, dehumFloat, humFloat,
-	fanDuration, fanPeriod,
-	Exit,
-	lastField
+	C1TempLow = 0, C1TempHigh = 1, C1TempFloat,
+	C1HumLow, C1HumHigh, C1DehumFloat, C1HumFloat,
+	C1FanDuration, C1FanPeriod,
+	C1Next, C1Exit,
+	C1LastField
 };
 
 struct AppState {
@@ -67,7 +67,7 @@ struct AppState {
 	0, /* unsigned long lastInputTime; */ \
 	15000, /* unsigned long maxIdleTime; */ \
 	MODE_IDLE, /* currentAppMode */ \
-	tempLow, /* Config1CurrentEditField config1Field; */ \
+	C1TempLow, /* Config1CurrentEditField config1Field; */ \
 	false, /* boolean editingCurrentField; */ \
 	\
 	0, /* float currentTemp; */ \
