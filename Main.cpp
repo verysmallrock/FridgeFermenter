@@ -38,7 +38,7 @@ void readSensors() {
   float currentTemp = sht31.convertCtoF(sht31.getTemperature());
   float currentHumidity = sht31.getHumidity();
 
-  if (isnan(state.currentHumidity) || isnan(state.currentTemp)) {
+  if (isnan(currentHumidity) || isnan(currentTemp)) {
     Serial.println("Failed to read from SHT sensor.");
     ++readErrorCount;
     if (readErrorCount == 20) {
