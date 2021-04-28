@@ -328,17 +328,20 @@ void updateRelays() {
   }
 
   // Humidity checks
-  if (state.humidifyWhenCooling == 1 && state.coolingActive) {
-    // humidify if cooling
-      activateHumidifier(POWER_ON);
-  } else {
-    int allowedMinHumidity = state.targetMinHumidity;
-    if (state.humidityDirection == DECREASE)
-      allowedMinHumidity -= state.dehumidityFloat;
-    int allowedMaxHumidity = state.targetMaxHumidity;
-    if (state.humidityDirection == INCREASE)
-      allowedMaxHumidity += state.humidityFloat;
+  int allowedMinHumidity = state.targetMinHumidity;
+  if (state.humidityDirection == DECREASE)
+    allowedMinHumidity -= state.dehumidityFloat;
+  int allowedMaxHumidity = state.targetMaxHumidity;
+  if (state.humidityDirection == INCREASE)
+    allowedMaxHumidity += state.humidityFloat;
 
+  // Note the allowedMaxTemp check here -- Don't humidify if we're way over intended humidity.
+  if (state.humidifyWhenCooling == 1 && state.coolingActive && state.currentHumidity < state.targetMaxHumidity) {
+    // humidify if cooling
+    activateHumidifier(POWER_ON);
+    activateDehumidifier(POWER_OFF); // ensure De-hume power off!
+    state.humidityDirection = INACTIVE; // ignore float logic
+  } else {
     if (state.currentHumidity < allowedMinHumidity) {
       activateDehumidifier(POWER_OFF);
     } else if (state.currentHumidity > allowedMaxHumidity)  {
