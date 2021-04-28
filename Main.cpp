@@ -2,11 +2,11 @@
 #include "AppState.h"
 #include "Display.h"
 #include "Power.h"
-#include "DHT.h"
+#include "SHT31.h"
 #include "Wifi.h"
 #include "SheetLogger.h"
 
-DHT dht(TEMPHUMIDITY_PIN, DHT22);
+SHT31 sht31 = SHT31();
 
 void mainSetup() {
   int line = 1;
@@ -16,7 +16,7 @@ void mainSetup() {
 
   setupPower();
   printText(line++, "Power setup OK");
-  dht.begin();
+  sht31.begin();
   printText(line++, "Temp setup OK");
 
   bool WifiOk = connectToWifi();
@@ -35,13 +35,17 @@ float tempAlpha = 0.4;
 float humidityAlpha = 0.07; // has more jitter, so lower alpha
 int readErrorCount = 0;
 void readSensors() {
-  float currentTemp = dht.convertCtoF(dht.readTemperature());
-  float currentHumidity = dht.readHumidity();
+  float currentTemp = sht31.convertCtoF(sht31.getTemperature());
+  float currentHumidity = sht31.getHumidity();
 
   if (isnan(state.currentHumidity) || isnan(state.currentTemp)) {
-    Serial.println("Failed to read from DHT sensor.");
+    Serial.println("Failed to read from SHT sensor.");
     ++readErrorCount;
-    if (readErrorCount > 10) {
+    if (readErrorCount == 20) {
+      SHT31 sht31 = SHT31();
+      sht31.begin();
+    }
+    if (readErrorCount > 40) {
       NVIC_SystemReset();
     }
   } else {

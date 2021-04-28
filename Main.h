@@ -3,7 +3,6 @@
 
 #define DEBUG false
 
-#define TEMPHUMIDITY_PIN A7
 #define FAN_PIN_1 A0
 
 void mainSetup();
