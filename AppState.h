@@ -67,7 +67,8 @@ struct AppState {
 	bool humidActive;
 	bool dehumidActive;
 
-	bool fanActive;
+	bool airExchangeActive;
+	bool internalFanActive;
 	unsigned long lastFanUpdate;
 
 	// Config 2
@@ -99,8 +100,8 @@ struct AppState {
 	88, /* int maxHumidity;  Graphed max */ \
 	75, /* int targetMinHumidity; User-chosen */ \
 	80, /* int targetMaxHumidity; User-chosen */ \
-	3, /* int dehumidityFloat; */ \
-	3, /* int humidityFloat; User-chosen */ \
+	3, /* int dehumidityFloat; User-chosen */ \
+	5, /* int humidityFloat; User-chosen */ \
 	\
 	30, /* int fanDurationSeconds; User-chosen */ \
 	180, /* int fanIntervalMinutes; User-chosen */ \
@@ -113,11 +114,12 @@ struct AppState {
 	false, /* bool humidActive; */ \
 	false, /* bool dehumidActive; */ \
 	false, /* bool fanActive; */ \
+	false, /* bool internalFanActive; */ \
 	0, /*unsigned long lastFanUpdate; */ \
 	\
-	1, /* int humidifyWhenCooling; */ \
-	15, /*int humidityPeriod; */ \
-	15,  /* int humidityBreak; */ \
+	0, /* int humidifyWhenCooling; */ \
+	5, /*int humidityPeriod; */ \
+	60,  /* int humidityBreak; */ \
 }
 
 extern AppState state;

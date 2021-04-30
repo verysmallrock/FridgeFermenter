@@ -1,4 +1,5 @@
 #include "SheetLogger.h"
+#include "AppState.h"
 #include <WiFiNINA.h>
 #include <ArduinoHttpClient.h>
 #include "Secrets.h"
@@ -51,13 +52,17 @@ bool setupSheetLogger() {
   Serial.println("\nReady to log data");
 }
 
-
+int trueScale = 70;
 void logTempHumidityToSheet(float temp, float humidity) {
   sheetTemp = String(temp);
   sheetHumid = String(humidity);
 
   String contentType = "application/json";
-  payload = payload_base + "\"" + sheetTemp + "," + sheetHumid + "\"}";
+  payload = payload_base + "\"" + sheetTemp + "," + sheetHumid;
+  payload = payload + "," + state.coolingActive * trueScale + "," + state.heatingActive * trueScale;
+  payload = payload + "," + state.dehumidActive * trueScale + "," + state.humidActive * trueScale;
+  payload = payload + "," + state.airExchangeActive * trueScale + "," + state.internalFanActive * trueScale;
+  payload = payload + "\"}";
   int statusCode = clientPost(postUrl, contentType, payload);
 
   if(statusCode >= 400) {

@@ -372,11 +372,11 @@ void updateRelays() {
 }
 
 void updateFans() {
-  if (state.fanActive) {
+  if (state.airExchangeActive) {
     if (millis() - state.lastFanUpdate > (state.fanDurationSeconds * 1000)) {
       Serial.println("Deactivating Fans");
       analogWrite(FAN_PIN_1, 0);
-      state.fanActive = false;
+      state.airExchangeActive = false;
       state.lastFanUpdate = millis();
     }
 
@@ -384,10 +384,9 @@ void updateFans() {
     if (millis() - state.lastFanUpdate > (state.fanIntervalMinutes * 60 * 1000)) {
       Serial.println("Activating Fans");
       analogWrite(FAN_PIN_1, 255);
-      state.fanActive = true;
+      state.airExchangeActive = true;
       state.lastFanUpdate = millis();
     }
-
   }
 }
 
