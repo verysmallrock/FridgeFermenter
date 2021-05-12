@@ -19,7 +19,7 @@ void mainSetup() {
   sht31.begin();
   printText(line++, "Temp setup OK");
 
-  bool WifiOk = connectToWifi();
+  bool WifiOk = checkWifiConnection();
   printText(line++, WifiOk ? "Connected to Wifi" : "Wifi ERROR");
 
   bool sheetOk = setupSheetLogger();

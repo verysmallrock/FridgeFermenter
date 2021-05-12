@@ -4,6 +4,7 @@
 #define DEBUG false
 
 #define FAN_PIN_1 A0
+#define FAN_PIN_2 A1
 
 void mainSetup();
 void readSensors();

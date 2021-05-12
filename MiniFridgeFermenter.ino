@@ -43,18 +43,18 @@ void updateRelayStates() {
 }
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   readTimer = millis();
-  delay(50);
+  delay(2000);
 
   mainSetup();
-  Serial.println("Appstate load");
   setupInput(onEncoderClick, onEncoderRotate);
   delay(2000);
   updateDisplay(true, false, false);
   updateRelays();
 
   pinMode(FAN_PIN_1, OUTPUT);
+  pinMode(FAN_PIN_2, OUTPUT);
 
   taskManager.scheduleFixedRate(220, readAndRedraw);
   taskManager.scheduleFixedRate(60000, logData);

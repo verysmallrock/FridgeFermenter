@@ -5,7 +5,7 @@
 #include <WiFiNINA.h>
 #include "Secrets.h"
 
-bool connectToWifi();
+bool checkWifiConnection();
 long getSignalStrength();
 
 #endif

@@ -1,3 +1,4 @@
+#include "Wifi.h"
 #include "SheetLogger.h"
 #include "AppState.h"
 #include <WiFiNINA.h>
@@ -20,36 +21,40 @@ String payload_base =  "{\"command\": \"appendRow\", \
 String payload = "";
 
 WiFiSSLClient wifi;
-
+HttpClient client = HttpClient(wifi, host, 443);
 
 int clientGet(String path) {
-  HttpClient client = HttpClient(wifi, host, 443);
   Serial.println("GET " + String(host) + path);
   client.get(path);
   int statusCode = client.responseStatusCode();
-  //String response = client.responseBody();
   return statusCode;
 }
 
 int clientPost(String path, String contentType, String body) {
-  HttpClient client = HttpClient(wifi, host, 443);
+  checkWifiConnection();
   IPAddress ip = WiFi.localIP();
-  Serial.println("POST " + String(host) + path + ": " + body);
-  Serial.println(ip);
-  client.post(path, contentType, body);
-  int statusCode = client.responseStatusCode();
 
-  client.flush();
+  client.beginRequest();
+  client.post(path);
+  client.sendHeader("Content-Type",contentType);
+  client.sendHeader("Content-Length", body.length());
+  client.beginBody();
+  client.print(body);
+  client.endRequest();
+
+  int statusCode = client.responseStatusCode();
+  String response = client.responseBody();
+  Serial.println("POST: " + String(statusCode));
   return statusCode;
 }
 
 bool setupSheetLogger() {
-  Serial.print("Logging data to ");
-  Serial.println(host);
+  Serial.println("Logging data to " + String(host));
 
   Serial.println("\nInitializing Sheet Header");
-  clientGet(initializeUrl);
-  Serial.println("\nReady to log data");
+  int statusCode = clientGet(initializeUrl);
+  Serial.println(statusCode);
+  Serial.println("Ready to log data");
 }
 
 int trueScale = 70;
@@ -63,11 +68,11 @@ void logTempHumidityToSheet(float temp, float humidity) {
   payload = payload + "," + state.dehumidActive * trueScale + "," + state.humidActive * trueScale;
   payload = payload + "," + state.airExchangeActive * trueScale + "," + state.internalFanActive * trueScale;
   payload = payload + "\"}";
+  Serial.println("Logging state to sheet...");
   int statusCode = clientPost(postUrl, contentType, payload);
 
-  if(statusCode >= 400) {
+  if(statusCode >= 400 || statusCode < 200) {
     Serial.println("Sheet Logger response was " + statusCode);
   }
-
-  Serial.println("logged temp " + String(statusCode));
+  Serial.println("POST finished.\n");
 }

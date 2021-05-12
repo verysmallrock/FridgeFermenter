@@ -9,7 +9,7 @@ void loadAppState() {
   state = state_store.read();
 
   // NOTE: State is cleared when writing a new program to Arduino!
-  if (state.valid == false) {
+  if (state.valid != true) {
     Serial.println("State.valid is " + String(state.valid));
     state = DEFAULT_STATE;
   } else {

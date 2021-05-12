@@ -1,4 +1,5 @@
 #include "Wifi.h"
+#include "AppState.h"
 
 int status = WL_IDLE_STATUS;
 
@@ -16,17 +17,31 @@ void preflight() {
   }
 }
 
-bool connectToWifi() {
-  Serial.print("Connecting to " + String(SSID));
+bool checkWifiConnection() {
+  if (WiFi.status() == WL_CONNECTED) {
+    return true;
+  } else {
+    if (status == WL_CONNECTED) {
+      Serial.println("Wifi was disconnected.  Reconnecting...");
+    }
+    status = WL_IDLE_STATUS;
+  }
+  Serial.println("Connecting to " + String(SSID));
 
   preflight();
 
   // attempt to connect to WiFi network:
+  int maxRetries = 30;
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WPA SSID: ");
+    Serial.println("Attempting to connect to WPA SSID: ");
     Serial.println(SSID);
     // Connect to WPA/WPA2 network:
     status = WiFi.begin(SSID, PASSWORD);
+    --maxRetries;
+    if (maxRetries <= 0) {
+      // Something has gone wrong.  Soft reset.
+      NVIC_SystemReset();
+    }
 
     delay(3000);
   }
