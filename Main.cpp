@@ -373,19 +373,36 @@ void updateRelays() {
 
 void updateFans() {
   if (state.airExchangeActive) {
-    if (millis() - state.lastFanUpdate > (state.fanDurationSeconds * 1000)) {
-      Serial.println("Deactivating Fans");
+    if (millis() - state.lastAirExchangeUpdate > (state.fanDurationSeconds * 1000)) {
+      Serial.println("Deactivating air exchange fans");
       analogWrite(FAN_PIN_1, 0);
       state.airExchangeActive = false;
-      state.lastFanUpdate = millis();
+      state.lastAirExchangeUpdate = millis();
     }
 
   } else {
-    if (millis() - state.lastFanUpdate > (state.fanIntervalMinutes * 60 * 1000)) {
-      Serial.println("Activating Fans");
+    if (millis() - state.lastAirExchangeUpdate > (state.fanIntervalMinutes * 60 * 1000)) {
+      Serial.println("Activating air exchange fans");
       analogWrite(FAN_PIN_1, 255);
       state.airExchangeActive = true;
-      state.lastFanUpdate = millis();
+      state.lastAirExchangeUpdate = millis();
+    }
+  }
+
+  if (state.internalFanActive) {
+    if (millis() - state.lastInternalFanUpdate > (state.internalFanDurationSeconds * 1000)) {
+      Serial.println("Deactivating Internal Fans");
+      analogWrite(FAN_PIN_2, 0);
+      state.internalFanActive = false;
+      state.lastInternalFanUpdate = millis();
+    }
+
+  } else {
+    if (millis() - state.lastInternalFanUpdate > (state.internalFanIntervalMinutes * 60 * 1000)) {
+      Serial.println("Activating Internal Fans");
+      analogWrite(FAN_PIN_2, 255);
+      state.internalFanActive = true;
+      state.lastInternalFanUpdate = millis();
     }
   }
 }

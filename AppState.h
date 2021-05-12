@@ -57,6 +57,8 @@ struct AppState {
 
 	int fanDurationSeconds;
 	int fanIntervalMinutes;
+	int internalFanDurationSeconds;
+	int internalFanIntervalMinutes;
 
 	/* Power activity */
 	int tempDirection;
@@ -69,7 +71,8 @@ struct AppState {
 
 	bool airExchangeActive;
 	bool internalFanActive;
-	unsigned long lastFanUpdate;
+	unsigned long lastAirExchangeUpdate;
+	unsigned long lastInternalFanUpdate;
 
 	// Config 2
 	int humidifyWhenCooling;
@@ -77,6 +80,7 @@ struct AppState {
 	// amount it goes over our upper bound
 	int humidityPeriod; // seconds
 	int humidityBreak; // seconds
+	int lastHttpResponse;
 };
 #define DEFAULT_STATE { \
 	true, /* valid;*/ \
@@ -105,6 +109,8 @@ struct AppState {
 	\
 	30, /* int fanDurationSeconds; User-chosen */ \
 	180, /* int fanIntervalMinutes; User-chosen */ \
+	60, /* int internalFanDurationSeconds; */ \
+	180, /* int internalFanIntervalMinutes; */ \
 	\
 	INACTIVE, /* int8_t tempDirection; */ \
 	false, /* bool heatingActive; */ \
@@ -115,11 +121,13 @@ struct AppState {
 	false, /* bool dehumidActive; */ \
 	false, /* bool fanActive; */ \
 	false, /* bool internalFanActive; */ \
-	0, /*unsigned long lastFanUpdate; */ \
+	0, /*unsigned long lastAirExchangeUpdate; */ \
+	0, /* unsigned long lastInternalFanUpdate; */ \
 	\
 	0, /* int humidifyWhenCooling; */ \
 	5, /*int humidityPeriod; */ \
 	60,  /* int humidityBreak; */ \
+	0, /* int lastHttpResponse; */ \
 }
 
 extern AppState state;

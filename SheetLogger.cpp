@@ -70,6 +70,7 @@ void logTempHumidityToSheet(float temp, float humidity) {
   payload = payload + "\"}";
   Serial.println("Logging state to sheet...");
   int statusCode = clientPost(postUrl, contentType, payload);
+  state.lastHttpResponse = statusCode;
 
   if(statusCode >= 400 || statusCode < 200) {
     Serial.println("Sheet Logger response was " + statusCode);

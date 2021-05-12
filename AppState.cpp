@@ -15,7 +15,8 @@ void loadAppState() {
   } else {
     Serial.println("State loaded");
   }
-  state.lastFanUpdate = 0;
+  state.lastAirExchangeUpdate = 0;
+  state.lastInternalFanUpdate = 0;
 }
 
 boolean appStateChanged = false;
