@@ -50,12 +50,11 @@
                 "D:\\Documents\\Arduino\\libraries\\arduino_519582\\src",
                 "D:\\Documents\\Arduino\\libraries\\Adafruit_GFX_Library",
                 "D:\\Documents\\Arduino\\libraries\\arduino_846427",
-                "D:\\Documents\\Arduino\\libraries\\arduino_889533",
+                "D:\\Documents\\Arduino\\libraries\\Grove_SHT31_Temp_Humi_Sensor",
+                "C:\\Users\\Luke\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\samd\\1.8.11\\libraries\\Wire",
                 "D:\\Documents\\Arduino\\libraries\\WiFiNINA\\src",
                 "D:\\Documents\\Arduino\\libraries\\ArduinoHttpClient\\src",
-                "C:\\Users\\Luke\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\samd\\1.8.11\\libraries\\Wire",
                 "D:\\Documents\\Arduino\\libraries\\Adafruit_BusIO",
-                "D:\\Documents\\Arduino\\libraries\\Adafruit_Unified_Sensor",
                 "c:\\users\\luke\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1",
                 "c:\\users\\luke\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1\\arm-none-eabi",
                 "c:\\users\\luke\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1\\backward",
@@ -526,7 +525,8 @@
                 "__QQ_IBIT__=0",
                 "__cpp_init_captures=201304",
                 "__ATOMIC_ACQ_REL=4",
-                "__ATOMIC_RELEASE=3"
+                "__ATOMIC_RELEASE=3",
+                "USBCON"
             ]
         },
         {
