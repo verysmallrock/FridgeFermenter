@@ -45,8 +45,8 @@ void nextAppMode(int forceMode) {
   appModeChanged();
 }
 
-int c1editFields[] = { C1TempLow, C1TempHigh, C1TempFloat, C1HumLow, C1HumHigh, C1DehumFloat, C1HumFloat, C1FanDuration, C1FanPeriod, C1Next, C1Exit, C1LastField };
-int c2editFields[] = { C2HumWhenCooling, C2HumPeriod, C2HumBreak, C2Exit, C2LastField };
+int c1editFields[] = { C1TempLow, C1TempHigh, C1TempFloat, C1HumLow, C1HumHigh, C1DehumFloat, C1HumFloat, C1Next, C1Exit, C1LastField };
+int c2editFields[] = { C2HumWhenCooling, C2HumPeriod, C2HumBreak, C2FanDuration, C2FanPeriod, C2IntFanDuration, C2IntFanPeriod, C2Exit, C2LastField };
 
 void nextConfigEditField(int direction) {
   int field;
@@ -89,8 +89,6 @@ int * getCurrentConfigField(Config1CurrentEditField field) {
     case C1HumHigh: return &state.targetMaxHumidity;
     case C1DehumFloat: return &state.dehumidityFloat;
     case C1HumFloat: return &state.humidityFloat;
-    case C1FanDuration: return &state.fanDurationSeconds;
-    case C1FanPeriod: return &state.fanIntervalMinutes;
   }
 }
 
@@ -99,6 +97,10 @@ int * getCurrentConfigField(Config2CurrentEditField field) {
     case C2HumWhenCooling: return &state.humidifyWhenCooling;
     case C2HumPeriod: return &state.humidityPeriod;
     case C2HumBreak: return &state.humidityBreak;
+    case C2FanDuration: return &state.fanDurationSeconds;
+    case C2FanPeriod: return &state.fanIntervalMinutes;
+    case C2IntFanDuration: return &state.internalFanDurationSeconds;
+    case C2IntFanPeriod: return &state.internalFanIntervalMinutes;
   }
 }
 
@@ -135,8 +137,6 @@ int validateConfigField(Config1CurrentEditField field, int currentField) {
     case C1HumHigh: return clamp(currentField, MIN_HUMIDITY + MIN_HUMIDITY_RANGE, MAX_HUMIDITY);
     case C1DehumFloat: return clamp(currentField, MIN_FLOAT, MAX_FLOAT);
     case C1HumFloat: return clamp(currentField, MIN_FLOAT, MAX_FLOAT);
-    case C1FanDuration: return clamp(currentField, MIN_FAN_DURATION, MAX_FAN_DURATION);
-    case C1FanPeriod: return clamp(currentField, MIN_FAN_PERIOD, MAX_FAN_PERIOD);
   }
 }
 
@@ -145,6 +145,10 @@ int validateConfigField(Config2CurrentEditField field, int currentField) {
     case C2HumWhenCooling: return clamp(currentField, 0, 1);
     case C2HumPeriod: return clamp(currentField, MIN_HUME_PERIOD, MAX_HUME_PERIOD);
     case C2HumBreak: return clamp(currentField, MIN_HUME_BREAK, MAX_HUME_BREAK);
+    case C2FanDuration: return clamp(currentField, MIN_FAN_DURATION, MAX_FAN_DURATION);
+    case C2FanPeriod: return clamp(currentField, MIN_FAN_PERIOD, MAX_FAN_PERIOD);
+    case C2IntFanDuration: return clamp(currentField, MIN_FAN_DURATION, MAX_FAN_DURATION);
+    case C2IntFanPeriod: return clamp(currentField, MIN_FAN_PERIOD, MAX_FAN_PERIOD);
   }
 }
 
@@ -158,8 +162,6 @@ void correctRelatedConfigField(Config1CurrentEditField field, int currentField) 
     case C1HumHigh: state.targetMinHumidity = clamp(state.targetMinHumidity, MIN_HUMIDITY, currentField - MIN_HUMIDITY_RANGE);
     case C1DehumFloat: return;
     case C1HumFloat: return;
-    case C1FanDuration: return;
-    case C1FanPeriod: return;
   }
 }
 
@@ -169,6 +171,10 @@ void correctRelatedConfigField(Config2CurrentEditField field, int currentField) 
     case C2HumWhenCooling: return; break;
     case C2HumPeriod: return; break;
     case C2HumBreak: return; break;
+    case C2FanDuration: return;
+    case C2FanPeriod: return;
+    case C2IntFanDuration: return;
+    case C2IntFanPeriod: return;
   }
 }
 

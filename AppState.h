@@ -15,7 +15,6 @@
 enum Config1CurrentEditField {
 	C1TempLow = 0, C1TempHigh = 1, C1TempFloat,
 	C1HumLow, C1HumHigh, C1DehumFloat, C1HumFloat,
-	C1FanDuration, C1FanPeriod,
 	C1Next, C1Exit,
 	C1LastField
 };
@@ -23,6 +22,8 @@ enum Config1CurrentEditField {
 enum Config2CurrentEditField {
 	C2HumWhenCooling = 0,
 	C2HumPeriod, C2HumBreak,
+	C2FanDuration, C2FanPeriod,
+	C2IntFanDuration, C2IntFanPeriod,
 	C2Exit, C2LastField
 };
 

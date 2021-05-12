@@ -213,16 +213,6 @@ void drawDisplay(bool drawNextPoint) {
     rightColors[2] = _config1FieldColor(C1HumFloat);
     printTextFancy(4, left, leftColors, 1, right, rightColors, 3);
 
-    left[0] = "Fan";
-    leftColors[0] = GRAY_600;
-    sprintf(buffer1, "%ds", state.fanDurationSeconds); right[0] = buffer1;
-    sprintf(buffer1, " / "); right[1] = buffer1;
-    sprintf(buffer1, "%dm", state.fanIntervalMinutes); right[2] = buffer1;
-    rightColors[0] = _config1FieldColor(C1FanDuration);
-    rightColors[1] = GRAY_600;
-    rightColors[2] = _config1FieldColor(C1FanPeriod);
-    printTextFancy(5, left, leftColors, 1, right, rightColors, 3);
-
     left[0] = "Next";
     leftColors[0] = _config1FieldColor(C1Next);
     right[0] = "Exit";
@@ -248,6 +238,26 @@ void drawDisplay(bool drawNextPoint) {
     rightColors[1] = GRAY_600;
     rightColors[2] = _config2FieldColor(C2HumBreak);
     printTextFancy(2, left, leftColors, 1, right, rightColors, 3);
+
+    left[0] = "Ex Fan";
+    leftColors[0] = GRAY_600;
+    sprintf(buffer1, "%ds", state.fanDurationSeconds); right[0] = buffer1;
+    sprintf(buffer1, " / "); right[1] = buffer1;
+    sprintf(buffer1, "%dm", state.fanIntervalMinutes); right[2] = buffer1;
+    rightColors[0] = _config2FieldColor(C2FanDuration);
+    rightColors[1] = GRAY_600;
+    rightColors[2] = _config2FieldColor(C2FanPeriod);
+    printTextFancy(3, left, leftColors, 1, right, rightColors, 3);
+
+    left[0] = "Int Fan";
+    leftColors[0] = GRAY_600;
+    sprintf(buffer1, "%ds", state.internalFanDurationSeconds); right[0] = buffer1;
+    sprintf(buffer1, " / "); right[1] = buffer1;
+    sprintf(buffer1, "%dm", state.internalFanIntervalMinutes); right[2] = buffer1;
+    rightColors[0] = _config2FieldColor(C2IntFanDuration);
+    rightColors[1] = GRAY_600;
+    rightColors[2] = _config2FieldColor(C2IntFanPeriod);
+    printTextFancy(4, left, leftColors, 1, right, rightColors, 3);
 
     left[0] = "";
     leftColors[0] = GRAY_600;
