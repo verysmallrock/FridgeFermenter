@@ -273,6 +273,24 @@ void printTitle(String text) {
   tft.print(text);
 }
 
+String lastStatus = "";
+void printTopRightStatus(String status) {
+  if (lastStatus != status) {
+      tft.setFont(TinyFont);
+      tft.setTextColor(GRAY_600);
+      int winWidth = tft.width();
+      int textWidth = 30;
+
+
+      tft.fillRect(winWidth - textWidth, 0 , textWidth + LeftOfScreen, TinyFontHeight + TopOfScreen, GRAY_100);
+      int stringWidth = getStringWidth(status);
+      tft.setCursor(winWidth - LeftOfScreen - stringWidth, TinyFontHeight + TopOfScreen);
+      tft.print(status);
+
+      lastStatus = status;
+  }
+}
+
 void _printGraphText(int line, String minStr, String maxStr, String bottomRightStr) {
   tft.setFont(TinyFont);
   tft.setTextColor(GRAY_600);

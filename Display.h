@@ -22,6 +22,7 @@ void updateDisplay(bool bg, bool title, bool text);
 void printTitle(String text);
 void printText(int line, String textLeft, String textRight = "");
 void printTextFancy(int line, String textLeft[], uint16_t leftColors[], int leftLen, String textRight[], uint16_t rightColors[], int rightLen);
+void printTopRightStatus(String status);
 
 void printGraphBg(int line, String min, String max, String bottomRightStr);
 void setGraphBottomRightStr(int line, String bottomRightStr);

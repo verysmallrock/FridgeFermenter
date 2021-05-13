@@ -53,6 +53,7 @@ bool setupSheetLogger() {
 
   Serial.println("\nInitializing Sheet Header");
   int statusCode = clientGet(initializeUrl);
+  state.lastHttpResponse = statusCode;
   Serial.println(statusCode);
   Serial.println("Ready to log data");
 }

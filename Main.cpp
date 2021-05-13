@@ -162,6 +162,9 @@ void drawDisplay(bool drawNextPoint) {
     setGraphBottomRightStr(5, getHumidityActivityString());
 
     printTitle("Aging Box");
+    if (state.lastHttpResponse != 0) {
+      printTopRightStatus(String(state.lastHttpResponse));
+    }
     sprintf(buffer1, "%0.1f F", state.currentTemp);
     printText(1, "Temperature", buffer1);
     if (drawNextPoint)
