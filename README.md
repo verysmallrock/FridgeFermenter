@@ -2,6 +2,16 @@
 
 Arduio Nano 33 IOT code to power a mini-fridge for sausage and cheese fermentation, beer fermentaions, dry-aging meat, koji and tempeh, etc.
 
+## My Setup
+
+The display:
+
+![Display](https://github.com/verysmallrock/FridgeFermenter/blob/main/readmedata/display.jpg?raw=true)
+
+The thing aging food:
+
+![Fridge](https://github.com/verysmallrock/FridgeFermenter/blob/main/readmedata/fridge.jpg?raw=true)
+
 ## Parts List
 
 These are the pieces I used. You could certainly use other parts! Knowing the names of the things I used (like "wire nuts") will hopefully be helpful. Having the right tools around is something I've accumulated for myself over years and I haven't listed all the tools I used, so keep that in mind.
@@ -39,3 +49,39 @@ Create a `Secrets.h` file that looks like this:
 ```
 
 TBD Details on the Google sheet.
+
+## Notes on Fonts
+
+Feel free to use my fonts.  You can drop them in to the Adafruit_ST7735 library easily.
+
+- [FreeUniversal Bold](https://github.com/verysmallrock/FridgeFermenter/blob/main/TitleFont.h) - my large font, used only as a single line at the top of the screen.
+- [Helvetica B10](https://github.com/verysmallrock/FridgeFermenter/blob/main/HelvB10.h) - My main UI font. 7 lines per screen not counting the title at the top.
+- [Tiny Font](https://github.com/verysmallrock/FridgeFermenter/blob/main/TinyFont.h) - A tiny font I use for overlaying on graphs.
+
+### My Process & Requirements
+
+The fonts in Adafruit_GFX are not very good for the sizes I needed, so I created my own.  My requirements:
+
+- [128×160px LCD](https://www.ebay.com/itm/224237573577) - ST7735S 128x160 QVGA display
+- One large font for title, 4 lines per screen or so (only used as a title though)
+- One medium font for UI, 7 lines per screen
+- One tiny font for drawing on graphs
+
+This is what I'm talking about:
+
+![Display](https://github.com/verysmallrock/FridgeFermenter/blob/main/readmedata/display2.jpg?raw=true)
+
+This is the general procedure I took for fonts:
+
+1. Source a font (BDF format was easiest to work with, but TTF can be used also).
+2. Convert the font into a format usable by Arduino (using binFontsTool).
+3. Try out the font and write some code to adjust it as needed.
+
+### Technical details on creating my fonts
+
+1. Get [UCGLib](https://github.com/olikraus/ucglib) and build the tools in `tools/font`
+2. Get [binFontsTool](https://forum.arduino.cc/t/excel-fonts-editor-converter-for-adafruit-utft-squix-ili9341_t3-oled_i2c/430653) (an Excel spreadsheet) - The version I used is [here](https://github.com/verysmallrock/FridgeFermenter/blob/main/readmedata/binFontsTool-0.2.7.zip?raw=true).
+2. *If font is TTF*, convert to BDF using ucglib: `do_fontsize_a_v2.sh 22 {source_ttf} {destination}`
+3. Run the BDF for a font you like through binFontsTool to create the .h file (the ones I used are in [readmedata](https://github.com/verysmallrock/FridgeFermenter/tree/main/readmedata)).
+4. Try out the font in you project, and adjust.  I wrote a [function to adjust vertical position](https://github.com/verysmallrock/FridgeFermenter/blob/main/Display.cpp#L45).
+5. Use the font!
