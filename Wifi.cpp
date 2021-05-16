@@ -18,13 +18,15 @@ void preflight() {
 }
 
 bool checkWifiConnection() {
-  if (WiFi.status() == WL_CONNECTED) {
+  status = WiFi.status();
+  if (status == WL_CONNECTED) {
     return true;
   } else {
     if (status == WL_CONNECTED) {
+      // https://github.com/arduino-libraries/WiFiNINA/issues/103
+      // also https://forum.arduino.cc/t/wifi-not-stable-over-longer-periods-is-this-normal-ideas/636846/41
       Serial.println("Wifi was disconnected.  Reconnecting...");
     }
-    status = WL_IDLE_STATUS;
   }
   Serial.println("Connecting to " + String(SSID));
 
@@ -33,17 +35,17 @@ bool checkWifiConnection() {
   // attempt to connect to WiFi network:
   int maxRetries = 30;
   while (status != WL_CONNECTED) {
+    --maxRetries;
+    if (maxRetries <= 0) {
+      Serial.println("Too many retries. Resetting system.");
+      // Something has gone wrong.  Soft reset.
+      NVIC_SystemReset();
+      return false;
+    }
     Serial.println("Attempting to connect to WPA SSID: ");
     Serial.println(SSID);
     // Connect to WPA/WPA2 network:
     status = WiFi.begin(SSID, PASSWORD);
-    --maxRetries;
-    if (maxRetries <= 0) {
-      // Something has gone wrong.  Soft reset.
-      NVIC_SystemReset();
-    }
-
-    delay(3000);
   }
 
   Serial.println("WiFi connected");

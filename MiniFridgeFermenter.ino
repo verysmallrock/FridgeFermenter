@@ -45,11 +45,11 @@ void updateRelayStates() {
 void setup() {
   Serial.begin(9600);
   readTimer = millis();
+  Serial.println("Booting up...");
   delay(2000);
 
   mainSetup();
   setupInput(onEncoderClick, onEncoderRotate);
-  delay(2000);
   updateDisplay(true, false, false);
   updateRelays();
 

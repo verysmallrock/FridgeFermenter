@@ -42,10 +42,12 @@ void readSensors() {
     Serial.println("Failed to read from SHT sensor.");
     ++readErrorCount;
     if (readErrorCount == 20) {
+      Serial.println("Unhealthy sensor read count.  Resetting sensor library.");
       SHT31 sht31 = SHT31();
       sht31.begin();
     }
     if (readErrorCount > 40) {
+      Serial.println("Too many sensor read errors.  Resetting system.");
       NVIC_SystemReset();
     }
   } else {
