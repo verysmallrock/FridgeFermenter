@@ -49,6 +49,10 @@ int clientPost(String path, String contentType, String body) {
 }
 
 bool setupSheetLogger() {
+  if (!state.logDataToCloud) {
+    Serial.println("Data logging is switched off. Skipping Sheet setup.");
+    return 0;
+  }
   Serial.println("Logging data to " + String(host));
 
   Serial.println("\nInitializing Sheet Header");
@@ -60,6 +64,10 @@ bool setupSheetLogger() {
 
 int trueScale = 70;
 void logTempHumidityToSheet(float temp, float humidity) {
+  if (!state.logDataToCloud) {
+    Serial.println("Data logging is switched off. Skipping Log request.");
+    return;
+  }
   sheetTemp = String(temp);
   sheetHumid = String(humidity);
 

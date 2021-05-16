@@ -46,7 +46,7 @@ void nextAppMode(int forceMode) {
 }
 
 int c1editFields[] = { C1TempLow, C1TempHigh, C1TempFloat, C1HumLow, C1HumHigh, C1DehumFloat, C1HumFloat, C1Next, C1Exit, C1LastField };
-int c2editFields[] = { C2HumWhenCooling, C2HumPeriod, C2HumBreak, C2FanDuration, C2FanPeriod, C2IntFanDuration, C2IntFanPeriod, C2Exit, C2LastField };
+int c2editFields[] = { C2HumWhenCooling, C2HumPeriod, C2HumBreak, C2FanDuration, C2FanPeriod, C2IntFanDuration, C2IntFanPeriod, C2LogDataToCloud, C2Exit, C2LastField };
 
 void nextConfigEditField(int direction) {
   int field;
@@ -101,6 +101,7 @@ int * getCurrentConfigField(Config2CurrentEditField field) {
     case C2FanPeriod: return &state.fanIntervalMinutes;
     case C2IntFanDuration: return &state.internalFanDurationSeconds;
     case C2IntFanPeriod: return &state.internalFanIntervalMinutes;
+    case C2LogDataToCloud: return &state.logDataToCloud;
   }
 }
 
@@ -149,6 +150,7 @@ int validateConfigField(Config2CurrentEditField field, int currentField) {
     case C2FanPeriod: return clamp(currentField, MIN_FAN_PERIOD, MAX_FAN_PERIOD);
     case C2IntFanDuration: return clamp(currentField, MIN_FAN_DURATION, MAX_FAN_DURATION);
     case C2IntFanPeriod: return clamp(currentField, MIN_FAN_PERIOD, MAX_FAN_PERIOD);
+    case C2LogDataToCloud: return clamp(currentField, 0, 1);
   }
 }
 
@@ -175,6 +177,7 @@ void correctRelatedConfigField(Config2CurrentEditField field, int currentField) 
     case C2FanPeriod: return;
     case C2IntFanDuration: return;
     case C2IntFanPeriod: return;
+    case C2LogDataToCloud: return;
   }
 }
 

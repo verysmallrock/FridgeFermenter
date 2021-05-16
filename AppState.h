@@ -24,6 +24,7 @@ enum Config2CurrentEditField {
 	C2HumPeriod, C2HumBreak,
 	C2FanDuration, C2FanPeriod,
 	C2IntFanDuration, C2IntFanPeriod,
+	C2LogDataToCloud,
 	C2Exit, C2LastField
 };
 
@@ -82,6 +83,7 @@ struct AppState {
 	int humidityPeriod; // seconds
 	int humidityBreak; // seconds
 	int lastHttpResponse;
+	int logDataToCloud;
 };
 #define DEFAULT_STATE { \
 	true, /* valid;*/ \
@@ -129,6 +131,7 @@ struct AppState {
 	5, /*int humidityPeriod; */ \
 	60,  /* int humidityBreak; */ \
 	0, /* int lastHttpResponse; */ \
+	true, /* bool logDataToCloud; */ \
 }
 
 extern AppState state;

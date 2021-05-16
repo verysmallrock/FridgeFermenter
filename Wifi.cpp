@@ -18,6 +18,10 @@ void preflight() {
 }
 
 bool checkWifiConnection() {
+  if (!state.logDataToCloud) {
+    Serial.println("Data logging is switched off.  Skipping Wifi connection.");
+    return 0;
+  }
   status = WiFi.status();
   if (status == WL_CONNECTED) {
     return true;

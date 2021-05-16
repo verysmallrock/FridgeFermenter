@@ -264,6 +264,12 @@ void drawDisplay(bool drawNextPoint) {
     rightColors[2] = _config2FieldColor(C2IntFanPeriod);
     printTextFancy(4, left, leftColors, 1, right, rightColors, 3);
 
+    left[0] = "Log To Cloud";
+    leftColors[0] = GRAY_600;
+    sprintf(buffer1, "%s", state.logDataToCloud == 1 ? "Yes" : "No"); right[0] = buffer1;
+    rightColors[0] = _config2FieldColor(C2LogDataToCloud);
+    printTextFancy(5, left, leftColors, 1, right, rightColors, 1);
+
     left[0] = "";
     leftColors[0] = GRAY_600;
     right[0] = "Exit";
