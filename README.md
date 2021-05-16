@@ -6,11 +6,11 @@ Arduio Nano 33 IOT code to power a mini-fridge for sausage and cheese fermentati
 
 The display:
 
-![Display](https://github.com/verysmallrock/FridgeFermenter/blob/main/readmedata/display.jpg?raw=true)
+<img src="https://github.com/verysmallrock/FridgeFermenter/blob/main/readmedata/display.jpg?raw=true" width="300"/>
 
 The thing aging food:
 
-![Fridge](https://github.com/verysmallrock/FridgeFermenter/blob/main/readmedata/fridge.jpg?raw=true)
+<img src="https://github.com/verysmallrock/FridgeFermenter/blob/main/readmedata/fridge.jpg?raw=true" width="300"/>
 
 ## Parts List
 
@@ -69,7 +69,7 @@ The fonts in Adafruit_GFX are not very good for the sizes I needed, so I created
 
 This is what I'm talking about:
 
-![Display](https://github.com/verysmallrock/FridgeFermenter/blob/main/readmedata/display2.jpg?raw=true)
+<img src="https://github.com/verysmallrock/FridgeFermenter/blob/main/readmedata/display2.jpg?raw=true" width="300"/>
 
 This is the general procedure I took for fonts:
 
