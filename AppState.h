@@ -99,14 +99,14 @@ struct AppState {
 	\
 	47, /* int minTemp;  Graphed min temp */ \
 	63, /* int maxTemp;  Graphed max temp */ \
-	53, /* int targetMinTemp; User-chosen */ \
-	55, /* int targetMaxTemp; User-chosen */ \
+	55, /* int targetMinTemp; User-chosen */ \
+	58, /* int targetMaxTemp; User-chosen */ \
 	3, /* int tempFloat; User-chosen */ \
 	\
 	73, /* int minHumidity; Graphed min */ \
 	88, /* int maxHumidity;  Graphed max */ \
-	75, /* int targetMinHumidity; User-chosen */ \
-	80, /* int targetMaxHumidity; User-chosen */ \
+	76, /* int targetMinHumidity; User-chosen */ \
+	81, /* int targetMaxHumidity; User-chosen */ \
 	3, /* int dehumidityFloat; User-chosen */ \
 	5, /* int humidityFloat; User-chosen */ \
 	\
