@@ -22,14 +22,19 @@ bool checkWifiConnection() {
     Serial.println("Data logging is switched off.  Skipping Wifi connection.");
     return 0;
   }
+  bool reconnected = false;
+  int lastStatus = status;
   status = WiFi.status();
   if (status == WL_CONNECTED) {
     return true;
   } else {
-    if (status == WL_CONNECTED) {
+    if (lastStatus == WL_CONNECTED) {
       // https://github.com/arduino-libraries/WiFiNINA/issues/103
       // also https://forum.arduino.cc/t/wifi-not-stable-over-longer-periods-is-this-normal-ideas/636846/41
       Serial.println("Wifi was disconnected.  Reconnecting...");
+      WiFi.disconnect();
+      WiFi.end();
+      reconnected = true;
     }
   }
   Serial.println("Connecting to " + String(SSID));
@@ -55,7 +60,7 @@ bool checkWifiConnection() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-  return true;
+  return !reconnected; // allow a cycle of other stuff after a reconnect
 }
 
 long getSignalStrength() {

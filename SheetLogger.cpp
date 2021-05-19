@@ -31,7 +31,11 @@ int clientGet(String path) {
 }
 
 int clientPost(String path, String contentType, String body) {
-  checkWifiConnection();
+  bool status = checkWifiConnection();
+  if (!status) {
+    Serial.println("Waiting to POST.");
+    return 0;
+  }
   IPAddress ip = WiFi.localIP();
 
   client.beginRequest();
