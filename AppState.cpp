@@ -19,14 +19,15 @@ void loadAppState() {
   state.lastInternalFanUpdate = 0;
 }
 
-boolean appStateChanged = false;
-void saveAppState() {
+bool appStateChanged = false;
+bool saveAppState() {
   if (!appStateChanged) {
-    return;
+    return false;
   }
   Serial.println("Saving app state");
   state_store.write(state);
   appStateChanged = false;
+  return true;
 }
 
 void nextAppMode(int forceMode) {
@@ -39,10 +40,10 @@ void nextAppMode(int forceMode) {
   if (state.currentAppMode > MODE_MAX) {
     state.currentAppMode = MODE_IDLE;
   }
-
+  bool configChanged = false;
   if (lastAppMode != MODE_IDLE && state.currentAppMode == MODE_IDLE)
-    saveAppState();
-  appModeChanged();
+    configChanged = saveAppState();
+  appModeChanged(configChanged);
 }
 
 int c1editFields[] = { C1TempLow, C1TempHigh, C1TempFloat, C1HumLow, C1HumHigh, C1DehumFloat, C1HumFloat, C1Next, C1Exit, C1LastField };

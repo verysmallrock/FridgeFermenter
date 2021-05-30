@@ -111,18 +111,13 @@ void validateMinMaxTemp() {
   }
 }
 
-void appModeChanged() {
-  if (state.currentAppMode == MODE_CONFIG_1 || state.currentAppMode == MODE_CONFIG_2) {
-    // turn things off while editing
-    activateHeat(POWER_OFF);
-    activateFridge(POWER_OFF);
-    activateHumidifier(POWER_OFF);
-    activateDehumidifier(POWER_OFF);
+void appModeChanged(bool configChanged) {
+  if (configChanged) {
+    // reset directional logic if we made config changes
     state.tempDirection = INACTIVE;
     state.humidityDirection = INACTIVE;
   }
   updateDisplay(true, false, false);
-
   minMaxInitialized = false;
   validateMinMaxTemp();
   drawDisplay(true);
@@ -333,23 +328,11 @@ void updateRelays() {
     allowedMaxTemp += state.tempFloat;
 
   if (state.currentTemp < allowedMinTemp) {
-    activateFridge(POWER_OFF);
+    setTempControl(Increase);
   } else if (state.currentTemp > allowedMaxTemp)  {
-    activateFridge(POWER_ON);
-  }
-
-  if (state.currentTemp < allowedMinTemp){
-    activateHeat(POWER_ON);
-  } else if (state.currentTemp > allowedMaxTemp)  {
-    activateHeat(POWER_OFF);
-  }
-
-  // Decide when to turn temperature control off
-  if (state.tempDirection == DECREASE && state.currentTemp < state.targetMinTemp) {
-    activateFridge(POWER_OFF);
-  }
-  else if (state.tempDirection == INCREASE && state.currentTemp > state.targetMaxTemp) {
-    activateHeat(POWER_OFF);
+    setTempControl(Decrease);
+  } else {
+    setTempControl(Inactive);
   }
 
   // Humidity checks
@@ -363,31 +346,19 @@ void updateRelays() {
   // Note the allowedMaxTemp check here -- Don't humidify if we're way over intended humidity.
   if (state.humidifyWhenCooling == 1 && state.coolingActive && state.currentHumidity < state.targetMaxHumidity) {
     // humidify if cooling
-    activateHumidifier(POWER_ON);
-    activateDehumidifier(POWER_OFF); // ensure De-hume power off!
+    setHumidityControl(Increase);
     state.humidityDirection = INACTIVE; // ignore float logic
   } else {
     if (state.currentHumidity < allowedMinHumidity) {
-      activateDehumidifier(POWER_OFF);
-    } else if (state.currentHumidity > allowedMaxHumidity)  {
-      activateDehumidifier(POWER_ON);
-    }
-
-    if (state.currentHumidity < allowedMinHumidity) {
+      Serial.println("HUMIDIFY: " + String(millis()) + " " + String(state.humidityPeriod) + " " + String(state.humidityBreak));
       if(millis() % ((state.humidityPeriod + state.humidityBreak) * 1000) < (state.humidityPeriod * 1000))
-        activateHumidifier(POWER_ON);
+        setHumidityControl(Increase);
       else
-        activateHumidifier(POWER_OFF, false);
+        setHumidityControl(Inactive, false);
     } else if (state.currentHumidity > allowedMaxHumidity)  {
-      activateHumidifier(POWER_OFF);
-    }
-
-    // Decide when to turn humidity control off
-    if (state.humidityDirection == DECREASE && state.currentHumidity < state.targetMinHumidity) {
-      activateDehumidifier(POWER_OFF);
-    }
-    else if (state.humidityDirection == INCREASE && state.currentHumidity > state.targetMaxHumidity) {
-      activateHumidifier(POWER_OFF);
+      setHumidityControl(Decrease);
+    } else {
+      setHumidityControl(Inactive);
     }
   }
 }

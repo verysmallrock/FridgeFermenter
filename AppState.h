@@ -137,7 +137,7 @@ struct AppState {
 extern AppState state;
 
 void loadAppState();
-void saveAppState();
+bool saveAppState();
 
 void nextAppMode(int forceMode = -1);
 void nextConfigEditField(int direction);

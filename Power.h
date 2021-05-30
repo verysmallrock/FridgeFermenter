@@ -11,10 +11,15 @@
 #define POWER_ON LOW
 #define POWER_OFF HIGH
 
+typedef enum {
+  Inactive  = 0,
+  Increase  = 1,
+  Decrease  = 2,
+} Direction;
+
+
 void setupPower();
-void activateHumidifier(int active, bool updateState = true);
-void activateDehumidifier(int active);
-void activateFridge(int active);
-void activateHeat(int active);
+void setHumidityControl(Direction direction, bool updateState = true);
+void setTempControl(Direction direction);
 
 #endif

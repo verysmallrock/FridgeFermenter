@@ -13,7 +13,7 @@ void logSensorsToCloud();
 void drawDisplay(bool drawNextPoint = false);
 void updateRelays();
 void updateFans();
-void appModeChanged();
+void appModeChanged(bool configChanged);
 
 void onInputPress();
 void onInputLongPress();

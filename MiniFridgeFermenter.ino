@@ -58,7 +58,7 @@ void setup() {
 
   taskManager.scheduleFixedRate(220, readAndRedraw);
   taskManager.scheduleFixedRate(60000, logData);
-  taskManager.scheduleFixedRate(2500, updateRelayStates);
+  taskManager.scheduleFixedRate(2400, updateRelayStates);
   taskManager.scheduleFixedRate(2500, exitEditingIfIdle);
   taskManager.scheduleFixedRate(5000, updateFans);
 

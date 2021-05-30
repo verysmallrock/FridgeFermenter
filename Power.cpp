@@ -13,31 +13,54 @@ void setupPower() {
 	digitalWrite(RELAY_PIN_HEAT, POWER_OFF);
 }
 
-void activateHumidifier(int active, bool updateState) {
-	if (updateState)
-		state.humidActive = active == POWER_ON;
-	if (active == POWER_ON)
+void setHumidityControl(Direction direction, bool updateState) {
+	Serial.println("Humidity " + String(direction) + " " + String(updateState));
+	if (direction == Inactive) {
+		state.humidityDirection = INACTIVE;
+		digitalWrite(RELAY_PIN_HUMIDIFIER, POWER_OFF);
+		digitalWrite(RELAY_PIN_DEHUMIDIFIER, POWER_OFF);
+		if (updateState) {
+			state.humidActive = false;
+			state.dehumidActive = false;
+		}
+	} else if (direction == Increase) {
 		state.humidityDirection = INCREASE;
-	digitalWrite(RELAY_PIN_HUMIDIFIER, active);
-}
-
-void activateDehumidifier(int active) {
-	state.dehumidActive = active == POWER_ON;
-	if (active == POWER_ON)
+		digitalWrite(RELAY_PIN_HUMIDIFIER, POWER_ON);
+		digitalWrite(RELAY_PIN_DEHUMIDIFIER, POWER_OFF);
+		if (updateState) {
+			state.humidActive = true;
+			state.dehumidActive = false;
+		}
+	} else if (direction == Decrease) {
 		state.humidityDirection = DECREASE;
-	digitalWrite(RELAY_PIN_DEHUMIDIFIER, active);
+		digitalWrite(RELAY_PIN_HUMIDIFIER, POWER_OFF);
+		digitalWrite(RELAY_PIN_DEHUMIDIFIER, POWER_ON);
+		if (updateState) {
+			state.humidActive = false;
+			state.dehumidActive = true;
+		}
+	}
 }
 
-void activateFridge(int active) {
-	state.coolingActive = active == POWER_ON;
-	if (active == POWER_ON)
-		state.tempDirection = DECREASE;
-	digitalWrite(RELAY_PIN_FRIDGE, active);
-}
-
-void activateHeat(int active) {
-	state.heatingActive = active == POWER_ON;
-	if (active == POWER_ON)
+void setTempControl(Direction direction) {
+	Serial.println("Temp " + String(direction));
+	if (direction == Inactive) {
+		state.tempDirection = INACTIVE;
+		state.heatingActive = false;
+		state.coolingActive = false;
+		digitalWrite(RELAY_PIN_HEAT, POWER_OFF);
+		digitalWrite(RELAY_PIN_FRIDGE, POWER_OFF);
+	} else if (direction == Increase) {
 		state.tempDirection = INCREASE;
-	digitalWrite(RELAY_PIN_HEAT, active);
+		state.heatingActive = true;
+		state.coolingActive = false;
+		digitalWrite(RELAY_PIN_HEAT, POWER_ON);
+		digitalWrite(RELAY_PIN_FRIDGE, POWER_OFF);
+	} else if (direction == Decrease) {
+		state.tempDirection = DECREASE;
+		state.heatingActive = false;
+		state.coolingActive = true;
+		digitalWrite(RELAY_PIN_HEAT, POWER_OFF);
+		digitalWrite(RELAY_PIN_FRIDGE, POWER_ON);
+	}
 }
