@@ -7,6 +7,7 @@
 #define FAN_PIN_2 A1
 
 void mainSetup();
+void reinitDisplay();
 void readSensors();
 void validateMinMaxTemp();
 void logSensorsToCloud();

@@ -17,6 +17,7 @@
 #define GREEN_200 0x4F67 // 79, 238, 58
 
 void setupDisplay();
+void initTft();
 void updateDisplay(bool bg, bool title, bool text);
 
 void printTitle(String text);
@@ -27,5 +28,6 @@ void printTopRightStatus(String status);
 void printGraphBg(int line, String min, String max, String bottomRightStr);
 void setGraphBottomRightStr(int line, String bottomRightStr);
 void printNextGraphPoint(int line, float percent);
+void resetLinePositions();
 
 #endif

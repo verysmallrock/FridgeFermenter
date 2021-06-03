@@ -5,5 +5,8 @@
 	"files.associations": {
 		"functional": "cpp"
 	},
-	"arduino.logLevel": "verbose"
+	"arduino.logLevel": "verbose",
+	"files.exclude": {
+		"/.history": true
+	}
 }

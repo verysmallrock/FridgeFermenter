@@ -61,7 +61,7 @@ void setup() {
   taskManager.scheduleFixedRate(2400, updateRelayStates);
   taskManager.scheduleFixedRate(2500, exitEditingIfIdle);
   taskManager.scheduleFixedRate(5000, updateFans);
-
+  taskManager.scheduleFixedRate(60000 * 60 * 12, reinitDisplay); // having LCD reliability issues....
 
   // init display
   readSensors();

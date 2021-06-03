@@ -402,3 +402,11 @@ void updateFans() {
 void logSensorsToCloud() {
   logTempHumidityToSheet(state.currentTemp, state.currentHumidity);
 }
+
+void reinitDisplay() {
+  initTft();
+  resetLinePositions();
+  updateDisplay(true, false, false);
+  initializeMinMax(state.currentTemp, state.currentHumidity);
+  minMaxInitialized = true;
+}

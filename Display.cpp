@@ -83,10 +83,14 @@ String lastGraphStrings[10][10];
 void setupDisplay() {
   correctFontY(7, Helvetica_Bold.last - Helvetica_Bold.first, Helvetica_Bold.glyph);
   correctFontY(5, FreeUniversal.last - FreeUniversal.first, FreeUniversal.glyph);
+  initTft();
+}
+
+void initTft() {
+  tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
   tft.initR(INITR_BLACKTAB);      // Init ST7735S chip, black tab
   tft.setRotation(1); // 270 degress
   tft.fillScreen(GRAY_100);
-  //ucg.setPrintDir(0);
 }
 
 void drawBackground() {
@@ -383,4 +387,10 @@ void printNextGraphPoint(int line, float percent) {
 void updateDisplay(bool bg, bool title, bool text) {
   resetBackground = bg;
   drawBackground();
+}
+
+void resetLinePositions() {
+  for (int i = 0; i < 10; ++i) {
+    lastLinePositions[i] = 0;
+  }
 }
