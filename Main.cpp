@@ -402,11 +402,23 @@ void updateFans() {
 void logSensorsToCloud() {
   logTempHumidityToSheet(state.currentTemp, state.currentHumidity);
 }
+// 700 minutes, 11.6 hours. Lines up on the 25 minutes mark,
+// which is how long it takes to fill the graph on the display.
+int displayResetRate = 700 * 60 * 1000;
+unsigned long lastReset = 0;
 
-void reinitDisplay() {
+void reinitDisplayCheck() {
+  unsigned long now = millis();
+  bool shouldReset = now - lastReset > displayResetRate;
+  if (!shouldReset) {
+    return;
+  }
+
   initTft();
   resetLinePositions();
   updateDisplay(true, false, false);
   initializeMinMax(state.currentTemp, state.currentHumidity);
   minMaxInitialized = true;
+
+  lastReset = now;
 }
