@@ -8,6 +8,7 @@
 
 void mainSetup();
 void reinitDisplayCheck();
+void rebootCheck();
 void readSensors();
 void validateMinMaxTemp();
 void logSensorsToCloud();

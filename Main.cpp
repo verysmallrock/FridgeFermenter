@@ -422,3 +422,19 @@ void reinitDisplayCheck() {
 
   lastReset = now;
 }
+
+// Reset every 72 hours.  Have seen some long-running critical failures
+// that should be avoided this way.
+int systemResetRate = 72 * 60 * 60 * 1000;
+unsigned long lastSystemReset = 0;
+
+void rebootCheck() {
+  unsigned long now = millis();
+  bool shouldReset = now - lastSystemReset > systemResetRate;
+  if (!shouldReset) {
+    return;
+  }
+
+  Serial.println("Ran for 72 hours.  Resetting system.");
+  NVIC_SystemReset();
+}

@@ -64,6 +64,7 @@ void setup() {
   // Can't schedule over 1 hour, so check often but only reset sometimes.
   // https://github.com/davetcc/TaskManagerIO/issues/8
   taskManager.scheduleFixedRate(60, reinitDisplayCheck, TIME_SECONDS); // having LCD reliability issues....
+  taskManager.scheduleFixedRate(60, rebootCheck, TIME_SECONDS);
 
   // init display
   readSensors();
