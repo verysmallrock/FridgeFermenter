@@ -24,6 +24,9 @@ void mainSetup() {
 
   bool sheetOk = setupSheetLogger();
   printText(line++, sheetOk ? "Sheetlogger OK": "Sheetlogger ERROR");
+
+  setTempControl(Inactive);
+  setHumidityControl(Inactive);
 }
 
 char buffer1[50];
@@ -315,6 +318,7 @@ void onInputChange(int direction) {
 }
 
 bool toggle = false;
+float shutoffFuzz = 0.2;
 
 void updateRelays() {
   if (state.currentAppMode != MODE_IDLE || state.currentTemp <= 0) { return; }
@@ -332,7 +336,11 @@ void updateRelays() {
   } else if (state.currentTemp > allowedMaxTemp)  {
     setTempControl(Decrease);
   } else {
-    setTempControl(Inactive);
+    // deactivate once we've reached our boundary
+    if (state.tempDirection == INCREASE && state.currentTemp > state.targetMaxTemp + shutoffFuzz ||
+        state.tempDirection == DECREASE && state.currentTemp < state.targetMinTemp - shutoffFuzz) {
+      setTempControl(Inactive);
+    }
   }
 
   // Humidity checks
@@ -358,7 +366,10 @@ void updateRelays() {
     } else if (state.currentHumidity > allowedMaxHumidity)  {
       setHumidityControl(Decrease);
     } else {
-      setHumidityControl(Inactive);
+      if (state.humidityDirection == INCREASE && state.currentHumidity > state.targetMaxHumidity + shutoffFuzz ||
+          state.humidityDirection == DECREASE && state.currentHumidity < state.targetMinHumidity - shutoffFuzz) {
+        setHumidityControl(Inactive);
+      }
     }
   }
 }
