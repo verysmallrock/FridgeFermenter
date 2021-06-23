@@ -16,7 +16,6 @@ void setupPower() {
 void setHumidityControl(Direction direction, bool updateState) {
 	Serial.println("Humidity " + String(direction) + " " + String(updateState));
 	if (direction == Inactive) {
-		state.humidityDirection = INACTIVE;
 		digitalWrite(RELAY_PIN_HUMIDIFIER, POWER_OFF);
 		digitalWrite(RELAY_PIN_DEHUMIDIFIER, POWER_OFF);
 		if (updateState) {
@@ -45,7 +44,6 @@ void setHumidityControl(Direction direction, bool updateState) {
 void setTempControl(Direction direction) {
 	Serial.println("Temp " + String(direction));
 	if (direction == Inactive) {
-		state.tempDirection = INACTIVE;
 		state.heatingActive = false;
 		state.coolingActive = false;
 		digitalWrite(RELAY_PIN_HEAT, POWER_OFF);
