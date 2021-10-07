@@ -446,6 +446,12 @@ void rebootCheck() {
     return;
   }
 
-  Serial.println("Ran for 72 hours.  Resetting system.");
+  updateDisplay(false, false, true);
+  printTitle("Rebooting...");
+  // turn off power first
+  setHumidityControl(Inactive);
+  setTempControl(Inactive);
+  // wait a little
+  delay(60000);
   NVIC_SystemReset();
 }
