@@ -47,7 +47,7 @@ void nextAppMode(int forceMode) {
 }
 
 int c1editFields[] = { C1TempLow, C1TempHigh, C1TempFloat, C1HumLow, C1HumHigh, C1DehumFloat, C1HumFloat, C1Next, C1Exit, C1LastField };
-int c2editFields[] = { C2HumWhenCooling, C2HumPeriod, C2HumBreak, C2FanDuration, C2FanPeriod, C2IntFanDuration, C2IntFanPeriod, C2LogDataToCloud, C2Exit, C2LastField };
+int c2editFields[] = { C2RelayControl, C2HumPeriod, C2HumBreak, C2FanDuration, C2FanPeriod, C2IntFanDuration, C2IntFanPeriod, C2LogDataToCloud, C2Exit, C2LastField };
 
 void nextConfigEditField(int direction) {
   int field;
@@ -59,7 +59,7 @@ void nextConfigEditField(int direction) {
     lastField = C1LastField;
   } else if (state.currentAppMode == MODE_CONFIG_2) {
     field = int(state.config2Field);
-    firstField = C2HumWhenCooling;
+    firstField = C2RelayControl;
     lastField = C2LastField;
   }
 
@@ -95,7 +95,8 @@ int * getCurrentConfigField(Config1CurrentEditField field) {
 
 int * getCurrentConfigField(Config2CurrentEditField field) {
   switch(field) {
-    case C2HumWhenCooling: return &state.humidifyWhenCooling;
+    //case C2HumWhenCooling: return &state.humidifyWhenCooling;
+    case C2RelayControl: return &state.relayControl;
     case C2HumPeriod: return &state.humidityPeriod;
     case C2HumBreak: return &state.humidityBreak;
     case C2FanDuration: return &state.fanDurationSeconds;
@@ -144,7 +145,8 @@ int validateConfigField(Config1CurrentEditField field, int currentField) {
 
 int validateConfigField(Config2CurrentEditField field, int currentField) {
   switch(field) {
-    case C2HumWhenCooling: return clamp(currentField, 0, 1);
+    //case C2HumWhenCooling: return clamp(currentField, 0, 1);
+    case C2RelayControl: return clamp(currentField, 0, 1);
     case C2HumPeriod: return clamp(currentField, MIN_HUME_PERIOD, MAX_HUME_PERIOD);
     case C2HumBreak: return clamp(currentField, MIN_HUME_BREAK, MAX_HUME_BREAK);
     case C2FanDuration: return clamp(currentField, MIN_FAN_DURATION, MAX_FAN_DURATION);
@@ -171,7 +173,8 @@ void correctRelatedConfigField(Config1CurrentEditField field, int currentField) 
 void correctRelatedConfigField(Config2CurrentEditField field, int currentField) {
   // assume currentField is VALID
   switch(field) {
-    case C2HumWhenCooling: return; break;
+    //case C2HumWhenCooling: return; break;
+    case C2RelayControl: return; break;
     case C2HumPeriod: return; break;
     case C2HumBreak: return; break;
     case C2FanDuration: return;

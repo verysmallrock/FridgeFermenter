@@ -20,7 +20,8 @@ enum Config1CurrentEditField {
 };
 
 enum Config2CurrentEditField {
-	C2HumWhenCooling = 0,
+	C2RelayControl = 0,
+	//C2HumWhenCooling = 0,
 	C2HumPeriod, C2HumBreak,
 	C2FanDuration, C2FanPeriod,
 	C2IntFanDuration, C2IntFanPeriod,
@@ -78,6 +79,7 @@ struct AppState {
 
 	// Config 2
 	int humidifyWhenCooling;
+	int relayControl; // enable/disable all relay controls. Only log to cloud.
 	// Humidifier really pumps the humidity, so use an on/off schedule to reduce the
 	// amount it goes over our upper bound
 	int humidityPeriod; // seconds
@@ -91,7 +93,7 @@ struct AppState {
 	15000, /* unsigned long maxIdleTime; */ \
 	MODE_IDLE, /* currentAppMode */ \
 	C1TempLow, /* Config1CurrentEditField config1Field; */ \
-	C2HumWhenCooling, /*Config2CurrentEditField config2Field; */ \
+	C2RelayControl, /*Config2CurrentEditField config2Field; */ \
 	false, /* boolean editingCurrentField; */ \
 	\
 	0, /* float currentTemp; */ \
@@ -128,6 +130,7 @@ struct AppState {
 	0, /* unsigned long lastInternalFanUpdate; */ \
 	\
 	0, /* int humidifyWhenCooling; */ \
+	1, /* int relayControl */ \
 	5, /*int humidityPeriod; */ \
 	60,  /* int humidityBreak; */ \
 	0, /* int lastHttpResponse; */ \

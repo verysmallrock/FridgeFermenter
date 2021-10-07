@@ -36,7 +36,7 @@ void logData() {
 }
 
 void updateRelayStates() {
-  if (state.currentAppMode != MODE_IDLE) {
+  if (state.currentAppMode != MODE_IDLE || state.relayControl == 0) {
     return;
   }
   updateRelays();
